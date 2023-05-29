@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicTacToe.ServerClient
+namespace UserModel
 {
-    public class Server
+    public class User
     {
-        TcpListener listener;
+        public string Login { get; set; } 
+        public string Password { get; set; } 
     }
 }
