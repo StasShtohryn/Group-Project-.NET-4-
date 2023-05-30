@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,19 +13,26 @@ using UserModel;
 
 namespace TicTacToe.ServerClient
 {
+
+    public enum GameResult
+    {
+        Continue = 0,
+        WinX = 1,
+        WinO = 2,
+        Draw = 3
+    }
+
     public class Server
     {
         TcpListener listener;
         TcpListener messageListener;
         List<User> users;
-        public Dictionary<string, string> logins;
 
         public Dictionary<string, TcpClient> currentClients;
         public Server(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
             users = new List<User>();
-            logins = new Dictionary<string, string>();
             currentClients = new Dictionary<string, TcpClient>();
         }
 
@@ -37,7 +45,7 @@ namespace TicTacToe.ServerClient
             foreach (var item in arr)
             {
                 var temp = item.Split("\t", StringSplitOptions.RemoveEmptyEntries);
-                users.Add(new U)
+                users.Add(new User(temp[0], temp[1]));
             }
 
         }
@@ -47,10 +55,10 @@ namespace TicTacToe.ServerClient
             if (!File.Exists("Logins.txt"))
                 File.Create("Logins.txt");
             StringBuilder sb = new StringBuilder();
-            foreach (var item in logins)
+            foreach (var item in users)
             {
-                sb.Append(item.Key + "\t");
-                sb.Append(item.Value + "\n");
+                sb.Append(item.Login + "\t");
+                sb.Append(item.Password + "\n");
             }
             File.WriteAllText("Logins.txt", sb.ToString());
         }
@@ -74,8 +82,6 @@ namespace TicTacToe.ServerClient
                     Task.WaitAll(task1, task2);
                     var client1 = task1.Result;
                     var client2 = task2.Result;
-                    await SendMsgAsync(client1, "X");
-                    await SendMsgAsync(client2, "O");
                     _ = StartGameAsync(client1, client2);
                 }
             }
@@ -109,7 +115,7 @@ namespace TicTacToe.ServerClient
                 }
                 else if (action.Equals("Register"))
                 {
-                    if (logins.ContainsKey(login))
+                    if (users.FirstOrDefault(u=>u.Login==login)!=null)
                     {
                         JsonObject json = new JsonObject();
                         json.Add("Response", "Fail");
@@ -119,7 +125,7 @@ namespace TicTacToe.ServerClient
                         continue;
                     }
                     await SendMsgAsync(tcpClient, "OK");
-                    logins[login] = password;
+                    users.Add(new User(login, password));
                 }
                 currentClients.Add(login, tcpClient);
                 return tcpClient;
@@ -129,43 +135,83 @@ namespace TicTacToe.ServerClient
         private async Task StartGameAsync(TcpClient client1, TcpClient client2)
         {
             int[] board = new int[9];
+            try
+            {
+                await SendMsgAsync(client1, "X");
+                await SendMsgAsync(client2, "O");
+                while (true)
+                {
+                    int pos = int.Parse(await ReceiveMsgAsync(client1));
+                    board[pos] = 1;
+                    (bool endGame, GameResult res) = IsGameOver(board);
+                    if (endGame)
+                    {
+                        await SendGameResultsAsync(res, client1, client2);
+                        return;
+                    }
+                    await SendMsgAsync(client2, pos.ToString());
+                    pos = int.Parse(await ReceiveMsgAsync(client2));
+                    board[pos] = 2;
+                    (endGame, res) = IsGameOver(board);
+                    if (endGame)
+                    {
+                        await SendGameResultsAsync(res, client1, client2);
+                        return;
+                    }
+                    await SendMsgAsync(client1, pos.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                client1.Close();
+                client2.Close();
+            }
         }
 
-        //public async Task HandleClientAsync(string login, TcpClient tcpClient)
-        //{
-        //    try
-        //    {
-        //        while (true)
-        //        {
-        //            string data = await ReceiveMsgAsync(tcpClient);
-        //            if (data.Equals("Close connection"))
-        //            {
-        //                return;
-        //            }
-        //            var addressee = data.Split("\t", StringSplitOptions.RemoveEmptyEntries)[0];
-        //            var message = data.Split("\t", StringSplitOptions.RemoveEmptyEntries)[1];
-        //            if (currentClients.ContainsKey(addressee))
-        //            {
-        //                var msg = login + ":  " + message;
-        //                var task1 = SendMsgAsync(currentClients[addressee], msg);
-        //                Task.WaitAll(task1);
-        //            }
-        //            else
-        //            {
-        //                await SendMsgAsync(tcpClient, "Message wasn't sent");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //    finally
-        //    {
-        //        currentClients.Remove(login);
-        //        tcpClient.Close();
-        //    }
-        //}
+        private (bool, GameResult) IsGameOver(int[] board)
+        {
+            for (int i = 0; i < board.Length; i += 3)
+            {
+                if (board[i] == board[i + 1] && board[i] == board[i + 2] && board[i] != 0)
+                    return (true, (GameResult)board[i]);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != 0)
+                    return (true, (GameResult)board[i]);
+            }
+            if (board[0] == board[4] && board[0] == board[8] && board[0] != 0)
+                return (true, (GameResult)board[0]);
+            if (board[2] == board[4] && board[2] == board[6] && board[2] != 0)
+                return (true, (GameResult)board[2]);
+            if (board.Where(f=>f==0).Count()==0)
+                return (true, GameResult.Draw);
+            return (false, GameResult.Continue);
+        }
+
+        private async Task SendGameResultsAsync(GameResult res, TcpClient client1, TcpClient client2)
+        {
+            if (res == GameResult.WinX)
+            {
+                await SendMsgAsync(client1, "Win");
+                await SendMsgAsync(client2, "Loose");
+            }
+            else if (res == GameResult.WinO)
+            {
+                await SendMsgAsync(client1, "Loose");
+                await SendMsgAsync(client2, "Win");
+            }
+            else
+            {
+                await SendMsgAsync(client1, "Draw");
+                await SendMsgAsync(client2, "Draw");
+            }
+        }
 
         public async Task<string> ReceiveMsgAsync(TcpClient tcpClient)
         {
@@ -189,9 +235,10 @@ namespace TicTacToe.ServerClient
 
         private bool CheckLogin(string? login, string? pass)
         {
-            if (logins.ContainsKey(login))
+            User user;
+            if ((user = users?.FirstOrDefault(u=>u.Login==login))!=null)
             {
-                if (logins[login].Equals(pass))
+                if (user.Password.Equals(pass))
                     return true;
             }
             return false;
