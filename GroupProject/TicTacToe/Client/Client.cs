@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace TicTacToe.ServerClient
+namespace TicTacToe.Client
 {
     internal class Client
     {
@@ -16,18 +14,16 @@ namespace TicTacToe.ServerClient
             tcpClient = new TcpClient(ip, port);
         }
 
-        public async Task Send(JsonObject obj)
+        public async Task Send(string msg)
         {
-            string json_text = JsonSerializer.Serialize(obj);
-
-            byte[] bytes = Encoding.UTF8.GetBytes(json_text);
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
             await tcpClient.GetStream().WriteAsync(Encoding.UTF8.GetBytes(bytes.Length.ToString()));
 
-            await tcpClient.GetStream().WriteAsync(Encoding.UTF8.GetBytes(json_text));
+            await tcpClient.GetStream().WriteAsync(bytes);
         }
 
-        public async Task<JsonObject> Recive()
+        public async Task<string> Recive()
         {
             byte[] buf = new byte[4];
 
@@ -37,9 +33,12 @@ namespace TicTacToe.ServerClient
             byte[] data = new byte[size];
             await tcpClient.GetStream().ReadAsync(data, 0, size);
 
-            JsonObject? obj = JsonSerializer.Deserialize<JsonObject>(Encoding.UTF8.GetString(buf));
+            return Encoding.UTF8.GetString(buf);
+        }
 
-            return obj;
+        public void Dispose()
+        {
+            tcpClient?.Dispose();
         }
     }
 }
