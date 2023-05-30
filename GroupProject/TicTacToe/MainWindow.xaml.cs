@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TicTacToe
+namespace Client
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,8 +23,24 @@ namespace TicTacToe
         public MainWindow()
         {
             InitializeComponent();
+        }
 
-            //coment #1
+        private void CloseApp_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                this.DragMove();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
