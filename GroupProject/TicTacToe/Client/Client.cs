@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -28,17 +29,13 @@ namespace TicTacToe.ServerClient
 
         public async Task<JsonObject> Recive()
         {
-            byte[] buf = new byte[1024];
+            byte[] buf = new byte[4];
 
-            await tcpClient.GetStream().ReadAsync(buf);
-            int size = int.Parse(Encoding.UTF8.GetString(buf));
+            await tcpClient.GetStream().ReadAsync(buf, 0, 4);
+            int size = BitConverter.ToInt32(buf);
 
-            do
-            {
-                await tcpClient.GetStream().ReadAsync(buf);
-                size--;
-
-            } while (size > 0);
+            byte[] data = new byte[size];
+            await tcpClient.GetStream().ReadAsync(data, 0, size);
 
             JsonObject? obj = JsonSerializer.Deserialize<JsonObject>(Encoding.UTF8.GetString(buf));
 
