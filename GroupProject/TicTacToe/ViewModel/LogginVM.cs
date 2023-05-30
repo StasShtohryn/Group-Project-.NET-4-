@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TicTacToe.ServerClient
+namespace Client.ViewModel
 {
-    public class Server
+    class LogginVM
     {
-        TcpListener listener;
     }
 }
