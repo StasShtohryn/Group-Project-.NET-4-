@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:Client.ViewModel"
+                    xmlns:view="clr-namespace:Client.View">
+
+    <DataTemplate DataType="{x:Type vm:LogginVM}">
+        <view:Loggin/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vm:Registration}">
+        <view:RegistrationPLS/>
+    </DataTemplate>
+
+
+</ResourceDictionary>
