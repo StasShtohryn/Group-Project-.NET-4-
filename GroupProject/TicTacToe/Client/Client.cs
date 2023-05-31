@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,10 +9,28 @@ namespace TicTacToe.Client
     internal class Client
     {
         TcpClient tcpClient;
+        IPEndPoint remoteEndPoint;
 
         public Client(string ip, int port)
         {
-            tcpClient = new TcpClient(ip, port);
+            remoteEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            tcpClient = new TcpClient();
+        }
+
+        public void ConnectToServer()
+        {
+            try
+            {
+                tcpClient.Connect(remoteEndPoint);
+                if (!tcpClient.Connected)
+                {
+                    throw new Exception("Connection was not established");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task Send(string msg)
