@@ -40,6 +40,7 @@ namespace TicTacToe.Client
             await tcpClient.GetStream().WriteAsync(Encoding.UTF8.GetBytes(bytes.Length.ToString()));
 
             await tcpClient.GetStream().WriteAsync(bytes);
+            await tcpClient.GetStream().FlushAsync();
         }
 
         public async Task<string> Recive()
