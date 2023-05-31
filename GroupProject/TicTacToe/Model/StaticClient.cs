@@ -13,6 +13,7 @@ namespace Client.Model
         public static void Init(string host, int port)
         {
             Client = new(host, port);
+            Client.ConnectToServer();
         }
 
         public static async Task Send(string message)
