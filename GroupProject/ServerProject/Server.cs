@@ -28,6 +28,7 @@ namespace TicTacToe.ServerClient
         TcpListener messageListener;
         List<User> users;
 
+        List<TcpClient> awaitingClients;
         public Dictionary<string, TcpClient> currentClients;
         public Server(IPAddress address, int port)
         {
@@ -50,17 +51,14 @@ namespace TicTacToe.ServerClient
 
         }
 
-        public async Task SaveLoginsAsync()
+        public async Task SaveLoginAsync(string? login, string? pass)
         {
             if (!File.Exists("Logins.txt"))
                 File.Create("Logins.txt");
             StringBuilder sb = new StringBuilder();
-            foreach (var item in users)
-            {
-                sb.Append(item.Login + "\t");
-                sb.Append(item.Password + "\n");
-            }
-            File.WriteAllText("Logins.txt", sb.ToString());
+            sb.Append(login + "\t");
+            sb.Append(pass + "\n");
+            await File.AppendAllTextAsync("Logins.txt", sb.ToString());
         }
 
         public void StartListening(int backlock)
@@ -75,13 +73,21 @@ namespace TicTacToe.ServerClient
             {
                 while (true)
                 {
-                   var task1 = AcceptClientAsync();
-                   var task2 = AcceptClientAsync();
+                    var task1 = AcceptClientAsync();
                     task1.Start();
-                    task2.Start();
-                    Task.WaitAll(task1, task2);
-                    var client1 = task1.Result;
-                    var client2 = task2.Result;
+                    var client2 = await task1;
+                    TcpClient client1;
+                    if (awaitingClients.Count!=0)
+                    {
+                        client1 = awaitingClients[0];
+                        awaitingClients.RemoveAt(0);
+                    }
+                    else
+                    {
+                        awaitingClients.Add(client2);
+                        await SendMsgAsync(client2, "Waiting for second player");
+                        continue;
+                    }
                     _ = StartGameAsync(client1, client2);
                 }
             }
@@ -115,17 +121,15 @@ namespace TicTacToe.ServerClient
                 }
                 else if (action.Equals("Register"))
                 {
-                    if (users.FirstOrDefault(u=>u.Login==login)!=null)
+                    if (users.FirstOrDefault(u => u.Login == login) != null)
                     {
-                        JsonObject json = new JsonObject();
-                        json.Add("Response", "Fail");
-                        string text = JsonSerializer.Serialize(json);
                         await SendMsgAsync(tcpClient, "This login already exists");
                         tcpClient.Close();
                         continue;
                     }
                     await SendMsgAsync(tcpClient, "OK");
                     users.Add(new User(login, password));
+                    await SaveLoginAsync(login, password);
                 }
                 currentClients.Add(login, tcpClient);
                 return tcpClient;
@@ -189,7 +193,7 @@ namespace TicTacToe.ServerClient
                 return (true, (GameResult)board[0]);
             if (board[2] == board[4] && board[2] == board[6] && board[2] != 0)
                 return (true, (GameResult)board[2]);
-            if (board.Where(f=>f==0).Count()==0)
+            if (board.Where(f => f == 0).Count() == 0)
                 return (true, GameResult.Draw);
             return (false, GameResult.Continue);
         }
@@ -236,7 +240,7 @@ namespace TicTacToe.ServerClient
         private bool CheckLogin(string? login, string? pass)
         {
             User user;
-            if ((user = users?.FirstOrDefault(u=>u.Login==login))!=null)
+            if ((user = users?.FirstOrDefault(u => u.Login == login)) != null)
             {
                 if (user.Password.Equals(pass))
                     return true;
