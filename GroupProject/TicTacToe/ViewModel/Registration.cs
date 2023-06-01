@@ -8,6 +8,7 @@ using Client.Model;
 using System.Windows.Input;
 using System.Net.Sockets;
 using System.Windows;
+using System.Security.Cryptography;
 
 namespace Client.ViewModel
 {
@@ -47,12 +48,26 @@ namespace Client.ViewModel
         {
             UTPallDate = CustomerID + " " + PoswordLoggins;
 
+            //compute hash
+            SHA256 sha256 = SHA256.Create();
+            byte[] tmp = sha256.ComputeHash(Encoding.UTF8.GetBytes(PoswordLoggins));
+
+            // Convert byte array to a string
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < tmp.Length; i++)
+            {
+                builder.Append(tmp[i].ToString("x2"));
+            }
+            string passwordHash = builder.ToString();
+
             
+            sha256.Dispose();
+
             try
             {
                 StaticClient.Init("127.0.0.1", 1234);
                 StaticClient.ConnectToServer();
-                await StaticClient.Send("Register" + "\t" + CustomerID + "\t" + PoswordLoggins);
+                await StaticClient.Send("Register" + "\t" + CustomerID + "\t" + passwordHash);
 
                 string answer = await StaticClient.Recive();
 
