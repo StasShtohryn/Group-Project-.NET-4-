@@ -13,17 +13,21 @@ namespace Client.Model
         public static void Init(string host, int port)
         {
             Client = new(host, port);
+        }
+
+        public static void ConnectToServer()
+        {
             Client.ConnectToServer();
         }
 
         public static async Task Send(string message)
         {
-            await Client.Send(message);
+            await Client.SendAsync(message);
         }
 
         public static async Task<string> Recive()
         {
-            return await Client.Recive();
+            return await Client.ReciveAsync();
         }
 
         public static void Dispose()

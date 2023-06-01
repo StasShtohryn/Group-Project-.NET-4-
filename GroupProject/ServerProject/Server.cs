@@ -34,6 +34,7 @@ namespace TicTacToe.ServerClient
         {
             listener = new TcpListener(address, port);
             users = new List<User>();
+            awaitingClients = new List<TcpClient>();
             currentClients = new Dictionary<string, TcpClient>();
         }
 
@@ -53,8 +54,6 @@ namespace TicTacToe.ServerClient
 
         public async Task SaveLoginAsync(string? login, string? pass)
         {
-            if (!File.Exists("Logins.txt"))
-                File.Create("Logins.txt");
             StringBuilder sb = new StringBuilder();
             sb.Append(login + "\t");
             sb.Append(pass + "\n");
@@ -74,7 +73,6 @@ namespace TicTacToe.ServerClient
                 while (true)
                 {
                     var task1 = AcceptClientAsync();
-                    task1.Start();
                     var client2 = await task1;
                     TcpClient client1;
                     if (awaitingClients.Count!=0)

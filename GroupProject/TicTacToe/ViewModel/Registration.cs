@@ -51,27 +51,25 @@ namespace Client.ViewModel
             try
             {
                 StaticClient.Init("127.0.0.1", 1234);
+                StaticClient.ConnectToServer();
+                await StaticClient.Send("Register" + "\t" + CustomerID + "\t" + PoswordLoggins);
+
+                string answer = await StaticClient.Recive();
+
+                if (answer.Equals("OK"))
+                {
+                    UTPallDate = "Registration is successful";
+                }
+                else if (answer.Equals("This login already exists"))
+                {
+                    throw new Exception("This login already exists");
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //retry
+                UTPallDate = ex.Message;
                 StaticClient.Dispose();
-                StaticClient.Init("127.0.0.1", 1234);
-            }
-
-            
-
-            await StaticClient.Send("Register" + "\t" + CustomerID + "\t" + PoswordLoggins);
-
-            string answer = await StaticClient.Recive();
-
-            if (answer.Equals("OK")) 
-            { 
-
-            }
-            else if (answer.Equals("This login already exists"))
-            {
-                throw new Exception("This login already exists");
             }
 
 

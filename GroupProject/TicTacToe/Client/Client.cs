@@ -33,27 +33,27 @@ namespace TicTacToe.Client
             }
         }
 
-        public async Task Send(string msg)
+        public async Task SendAsync(string msg)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
-            await tcpClient.GetStream().WriteAsync(Encoding.UTF8.GetBytes(bytes.Length.ToString()));
+            await tcpClient.GetStream().WriteAsync(BitConverter.GetBytes(bytes.Length));
 
             await tcpClient.GetStream().WriteAsync(bytes);
             await tcpClient.GetStream().FlushAsync();
         }
 
-        public async Task<string> Recive()
+        public async Task<string> ReciveAsync()
         {
             byte[] buf = new byte[4];
 
-            await tcpClient.GetStream().ReadAsync(buf, 0, 4);
+            await tcpClient.GetStream().ReadAsync(buf, 0, buf.Length);
             int size = BitConverter.ToInt32(buf);
 
             byte[] data = new byte[size];
-            await tcpClient.GetStream().ReadAsync(data, 0, size);
-
-            return Encoding.UTF8.GetString(buf);
+            await tcpClient.GetStream().ReadAsync(data, 0, data.Length);
+            string msg = Encoding.UTF8.GetString(data);
+            return msg;
         }
 
         public void Dispose()
