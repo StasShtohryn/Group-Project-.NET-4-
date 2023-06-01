@@ -83,7 +83,21 @@
 
                     </Menu:Btn>
 
+                    <Menu:Btn Style="{StaticResource BtnStyle}"
+                              Command="{Binding GameCommand}">
 
+                        <Grid>
+
+                            <Image Source="Images/img_game.png"
+                                   Style="{StaticResource Image_Style}" />
+
+                            <TextBlock Text="Game
+                                       "
+                                       Style="{StaticResource Text_Style}" />
+
+                        </Grid>
+
+                    </Menu:Btn>
 
                 </StackPanel>
 
@@ -97,7 +111,7 @@
             </Grid>
 
         </Grid>
-        
+
         <Button x:Name="CloseApp"
                 Style="{StaticResource ExitApp}"
                 Click="CloseApp_Click" />

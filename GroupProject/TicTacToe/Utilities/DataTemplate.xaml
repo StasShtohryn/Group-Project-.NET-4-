@@ -11,5 +11,8 @@
         <view:RegistrationPLS/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:GameVM}">
+        <view:Game/>
+    </DataTemplate>
 
 </ResourceDictionary>

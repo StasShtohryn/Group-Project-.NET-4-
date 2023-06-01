@@ -3,25 +3,72 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Client.ViewModel"
              xmlns:local="clr-namespace:Client.View"
              mc:Ignorable="d"
              d:DesignHeight="600"
-             d:DesignWidth="622">
-
+             d:DesignWidth="622"
+             Style="{StaticResource Page_Style}">
+                
+    <UserControl.DataContext>
+        <vm:LogginVM />
+    </UserControl.DataContext>
+    
     <Grid>
 
         <Border CornerRadius="0,20,20,0" Margin="0,5,5,0">
 
             <Image Source="/Images/home_page.png"
-                   Stretch="Fill" />
+                   Stretch="Fill" Margin="0,5,0,-5" />
 
         </Border>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-            </Grid.RowDefinitions>
-            
-        </Grid>
+
+        <TextBlock Text="Loggin :"
+                   Foreground="#DBDBDB"
+                   FontSize="12"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   FontFamily="/Fonts/#Rubik Medium"
+                   Margin="78,160,0,0" />
+
+        <TextBlock Text="Posword :"
+                   Foreground="#DBDBDB"
+                   FontSize="12"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   FontFamily="/Fonts/#Rubik Medium"
+                   Margin="75,218,0,0" />
+        <TextBox Text="{Binding CustomerID}" Width="150"
+                   Foreground="Black"
+                   FontSize="12"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   FontFamily="/Fonts/#Rubik Medium"
+                   Margin="159,158,0,0" />
+
+        <TextBox Text="{Binding PoswordLoggins}" Width="150"
+                   Foreground="Black"
+                   FontSize="12"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   FontFamily="/Fonts/#Rubik Medium"
+                   Margin="159,218,0,0" />
+        
+        
+        <Button Content="                 Loggin
+                " HorizontalAlignment="Left" FontStyle="Oblique" Margin="108,275,0,0" VerticalAlignment="Top" Width="228"
+                Command="{Binding LogginOnServer}"
+                
+                />
+        <TextBlock Text="{Binding UTPallDate}" Width="354"
+                   Foreground="#CED565"
+                   FontSize="25"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   FontFamily="/Fonts/#Rubik Medium"
+                   Margin="122,351,0,0" Height="105" />
+
+
+
     </Grid>
 </UserControl>
