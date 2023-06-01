@@ -12,6 +12,8 @@ namespace Client.ViewModel
     class LogginVM : Utilities.ViewModelBase
     {
 
+       
+
         private string RFG;
         private readonly PageModel _pageModel;
         public String CustomerID

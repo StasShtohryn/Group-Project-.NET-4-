@@ -1,5 +1,4 @@
-﻿    
-<UserControl x:Class="Client.View.Game"
+﻿<UserControl x:Class="Client.View.Game"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,6 +21,10 @@
                             Stretch="None" />
             </Border.Background>
         </Border>
+        <Button Content="Button" 
+                Command="{Binding OpenGame}"
+                
+                HorizontalAlignment="Left" Margin="190,302,0,0" VerticalAlignment="Top" Width="220"/>
 
     </Grid>
 </UserControl>
