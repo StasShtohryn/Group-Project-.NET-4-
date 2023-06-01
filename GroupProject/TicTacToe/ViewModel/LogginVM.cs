@@ -3,6 +3,7 @@ using Client.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -42,6 +43,46 @@ namespace Client.ViewModel
         private async void PerformLogginOnServer(object commandParameter)
         {
             UTPallDate = CustomerID + " " + PoswordLoggins;
+
+            //compute hash
+            SHA256 sha256 = SHA256.Create();
+            byte[] tmp = sha256.ComputeHash(Encoding.UTF8.GetBytes(PoswordLoggins));
+
+            // Convert byte array to a string
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < tmp.Length; i++)
+            {
+                builder.Append(tmp[i].ToString("x2"));
+            }
+            string passwordHash = builder.ToString();
+
+
+            sha256.Dispose();
+
+            try
+            {
+                StaticClient.Init("127.0.0.1", 1234);
+                StaticClient.ConnectToServer();
+                await StaticClient.Send("Log in" + "\t" + CustomerID + "\t" + passwordHash);
+
+                string answer = await StaticClient.Recive();
+
+                if (answer.Equals("OK"))
+                {
+                    UTPallDate = "Login is successful";
+                }
+                else if (answer.Equals("Wrong login or password"))
+                {
+                    throw new Exception("Wrong login or password");
+                }
+            }
+            catch (Exception ex)
+            {
+                //retry
+                UTPallDate = ex.Message;
+                StaticClient.Dispose();
+            }
+
         }
 
     }
