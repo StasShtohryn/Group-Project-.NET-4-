@@ -20,15 +20,18 @@ namespace Client.ViewModel
 
         public ICommand LogginCommand { get; set; }
         public ICommand RegisterCommand { get; set; }
+        public ICommand GameCommand { get; set; }
 
         private void Loggin(object obj) => CurrentView = new LogginVM();
         private void Register(object obj) => CurrentView = new Registration();
+        private void Game(object obj) => CurrentView = new GameVM();
         public NavigationVM()
         {
             LogginCommand = new RelayCommand(Loggin);
             RegisterCommand = new RelayCommand(Register);
+            GameCommand = new RelayCommand(Game);
 
-            // Startup Page
+            //// Startup Page
             CurrentView = new LogginVM();
         }
     }
