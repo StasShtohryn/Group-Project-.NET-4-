@@ -17,17 +17,20 @@ namespace Client.ViewModel
         }
         async Task Start()
         {
-            StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
-            //while (true)
-            //{
+            
+            while (true)
+            {
+                await StaticClient.Send("Start Game");
+                string answer = await StaticClient.Recive();
 
+                if (answer == "OK")
+                {
+                    StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
+                    break;
+                }
+                
 
-            //    if( glo == conect2people)
-            //    {
-            //        StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
-            //        break;
-            //    }
-            //}
+            }
         }
         private RelayCommand open_Game;
         public ICommand OpenGame => open_Game ??= new RelayCommand(OpenGameX);
