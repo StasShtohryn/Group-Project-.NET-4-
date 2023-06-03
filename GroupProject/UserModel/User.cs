@@ -15,7 +15,7 @@ namespace UserModel
         public string Login { get; set; }
         [Column(TypeName = "nvarchar(MAX)")]
         [MinLength(4)]
-        public string Password { get; set; } 
+        public string Password { get; set; }
 
         public int Games { get; set; }
         public int Wins { get; set; }

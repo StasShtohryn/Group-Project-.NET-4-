@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "TicTacToe\Client.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerProject", "ServerProject\ServerProject.csproj", "{72CD48E7-0B61-44F8-A000-4ECC550D9666}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModel", "UserModel\UserModel.csproj", "{F2AC43B8-CF97-42CD-AD4C-7DAF75D20C90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModel", "UserModel\UserModel.csproj", "{DA97A23C-02F1-4FE1-8FB1-93B849B7BA5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{72CD48E7-0B61-44F8-A000-4ECC550D9666}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72CD48E7-0B61-44F8-A000-4ECC550D9666}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72CD48E7-0B61-44F8-A000-4ECC550D9666}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2AC43B8-CF97-42CD-AD4C-7DAF75D20C90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2AC43B8-CF97-42CD-AD4C-7DAF75D20C90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2AC43B8-CF97-42CD-AD4C-7DAF75D20C90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2AC43B8-CF97-42CD-AD4C-7DAF75D20C90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA97A23C-02F1-4FE1-8FB1-93B849B7BA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA97A23C-02F1-4FE1-8FB1-93B849B7BA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA97A23C-02F1-4FE1-8FB1-93B849B7BA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA97A23C-02F1-4FE1-8FB1-93B849B7BA5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
