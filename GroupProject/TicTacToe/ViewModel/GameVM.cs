@@ -17,5 +17,13 @@ namespace Client.ViewModel
             //CustomerID = "das";
             //PoswordLoggins = "2222";
         }
+
+        private RelayCommand open_Game;
+        public ICommand OpenGame => open_Game ??= new RelayCommand(OpenGameX);
+        private async void OpenGameX(object commandParameter)
+        {
+
+            StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
+        }
     }
 }
