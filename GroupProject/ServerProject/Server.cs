@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ServerProject.Services;
+using ServerProject.UserDb;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO;
@@ -26,38 +28,16 @@ namespace TicTacToe.ServerClient
     {
         TcpListener listener;
         TcpListener messageListener;
-        List<User> users;
+        IUserService _userService;
 
         List<TcpClient> awaitingClients;
-        public Dictionary<string, TcpClient> currentClients;
+        public Dictionary<User, TcpClient> currentClients;
         public Server(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
-            users = new List<User>();
             awaitingClients = new List<TcpClient>();
-            currentClients = new Dictionary<string, TcpClient>();
-        }
-
-        public async Task DownloadLoginsAsync()
-        {
-            if (!File.Exists("Logins.txt"))
-                return;
-            string text = await File.ReadAllTextAsync("Logins.txt", Encoding.UTF8);
-            var arr = text.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-            foreach (var item in arr)
-            {
-                var temp = item.Split("\t", StringSplitOptions.RemoveEmptyEntries);
-                users.Add(new User(temp[0], temp[1]));
-            }
-
-        }
-
-        public async Task SaveLoginAsync(string? login, string? pass)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(login + "\t");
-            sb.Append(pass + "\n");
-            await File.AppendAllTextAsync("Logins.txt", sb.ToString());
+            currentClients = new Dictionary<User, TcpClient>();
+            _userService = new UserService(new UserDbContext());
         }
 
         public void StartListening(int backlock)
@@ -107,9 +87,10 @@ namespace TicTacToe.ServerClient
                 var action = tmp.Split("\t")[0];
                 var login = tmp.Split("\t")[1];
                 var password = tmp.Split("\t")[2];
+                User newUser = new User { Login = login, Password = password };
                 if (action.Equals("Log in"))
                 {
-                    if (!CheckLogin(login, password))
+                    if (!CheckLogin(newUser))
                     {
                         await SendMsgAsync(tcpClient, "Wrong login or password");
                         tcpClient.Close();
@@ -119,17 +100,16 @@ namespace TicTacToe.ServerClient
                 }
                 else if (action.Equals("Register"))
                 {
-                    if (users.FirstOrDefault(u => u.Login == login) != null)
+                    if (_userService.GetUsers().FirstOrDefault(u => u.Login == login) != null)
                     {
                         await SendMsgAsync(tcpClient, "This login already exists");
                         tcpClient.Close();
                         continue;
                     }
                     await SendMsgAsync(tcpClient, "OK");
-                    users.Add(new User(login, password));
-                    await SaveLoginAsync(login, password);
+                    await _userService.AddUser(newUser);
                 }
-                currentClients.Add(login, tcpClient);
+                currentClients.Add(newUser, tcpClient);
                 return tcpClient;
             }
         }
@@ -235,18 +215,18 @@ namespace TicTacToe.ServerClient
             await stream.FlushAsync();
         }
 
-        private bool CheckLogin(string? login, string? pass)
+        private bool CheckLogin(User? newUser)
         {
             User user;
-            if ((user = users?.FirstOrDefault(u => u.Login == login)) != null)
+            if ((user = _userService.GetUsers()?.FirstOrDefault(u => u.Login == newUser.Login)) != null)
             {
-                if (user.Password.Equals(pass))
+                if (user.Password.Equals(newUser.Password))
                     return true;
             }
             return false;
         }
 
-        public async Task StopListening()
+        public void StopListening()
         {
             foreach (var item in currentClients)
             {

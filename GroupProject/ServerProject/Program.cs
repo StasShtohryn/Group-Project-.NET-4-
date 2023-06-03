@@ -10,7 +10,7 @@ namespace ServerProject
             try
             {
                 Server server = new Server(IPAddress.Loopback, 1234);
-                await server.DownloadLoginsAsync();
+                //await server.DownloadLoginsAsync();
                 server.StartListening(10);
                 await server.StartAcceptAsync();
             }
