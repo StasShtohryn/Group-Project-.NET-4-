@@ -9,5 +9,6 @@ namespace Client.Model
     public static class StaticVisableAndEnableElementsOnView
     {
         public static System.Windows.Visibility EnamleOnGame { get; set; }
+        public static System.Windows.Visibility EnamleOnGamePage { get; set; }
     }
 }

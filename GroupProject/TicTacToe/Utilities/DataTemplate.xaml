@@ -15,4 +15,8 @@
         <view:Game/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vm:GameXOXVM}">
+        <view:GameXOX/>
+    </DataTemplate>
+
 </ResourceDictionary>

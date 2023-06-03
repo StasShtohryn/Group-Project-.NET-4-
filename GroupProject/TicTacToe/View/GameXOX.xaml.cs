@@ -18,7 +18,7 @@ namespace Client.View
     /// <summary>
     /// Логика взаимодействия для GameXOX.xaml
     /// </summary>
-    public partial class GameXOX : Page
+    public partial class GameXOX : UserControl
     {
         public GameXOX()
         {
