@@ -13,17 +13,31 @@ namespace Client.ViewModel
     {
         public GameVM()
         {
-            //_pageModel = new PageModel();
-            //CustomerID = "das";
-            //PoswordLoggins = "2222";
-        }
 
+        }
+        async Task Start()
+        {
+            StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
+            //while (true)
+            //{
+
+
+            //    if( glo == conect2people)
+            //    {
+            //        StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
+            //        break;
+            //    }
+            //}
+        }
         private RelayCommand open_Game;
         public ICommand OpenGame => open_Game ??= new RelayCommand(OpenGameX);
         private async void OpenGameX(object commandParameter)
         {
 
-            StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
+            Task.Run(async () =>
+            {
+                await Start();
+            });
         }
     }
 }
