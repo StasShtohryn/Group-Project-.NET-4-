@@ -55,4 +55,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UserModel\UserModel.csproj" />
+  </ItemGroup>
+
 </Project>
