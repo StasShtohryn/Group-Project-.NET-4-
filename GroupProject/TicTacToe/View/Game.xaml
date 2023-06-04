@@ -13,15 +13,23 @@
         <vm:GameVM />
     </UserControl.DataContext>
 
+    
     <Grid Margin="15">
 
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+        </Grid>
         <Border CornerRadius="0,20,20,0">
             <Border.Background>
                 <ImageBrush ImageSource="/Images/Game_page.png"
-                            Stretch="None" />
+                            Stretch="Fill" />
             </Border.Background>
         </Border>
-        <Button Content="Button" 
+        <Button Content="Button"
+                IsEnabled="{Binding IsDisableActivity}"
                 Command="{Binding OpenGame}"
                 
                 HorizontalAlignment="Left" Margin="190,302,0,0" VerticalAlignment="Top" Width="220"/>
