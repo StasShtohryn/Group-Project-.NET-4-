@@ -11,29 +11,41 @@ namespace Client.ViewModel
 {
     class GameVM : Utilities.ViewModelBase
     {
+        private bool is_disableactivity;
+        public bool IsDisableActivity
+        {
+            get { return is_disableactivity; }
+            set { is_disableactivity = value; OnPropertyChanged(); }
+
+        }
+        async void VDDP()
+        {
+            while (true)
+            {
+                IsDisableActivity = StaticVisableAndEnableElementsOnView.Enablebuttongame;
+                if (IsDisableActivity == false)
+                {
+                    break;
+                }
+            }
+        }
         public GameVM()
         {
-
+            StaticVisableAndEnableElementsOnView.Enablebuttongame = true;
+            Task.Run(() =>
+            {
+                VDDP();
+            });
         }
         async Task Start()
         {
             StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
-            //while (true)
-            //{
-
-
-            //    if( glo == conect2people)
-            //    {
-            //        StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
-            //        break;
-            //    }
-            //}
         }
         private RelayCommand open_Game;
         public ICommand OpenGame => open_Game ??= new RelayCommand(OpenGameX);
         private async void OpenGameX(object commandParameter)
         {
-
+            StaticVisableAndEnableElementsOnView.Enablebuttongame = false;
             Task.Run(async () =>
             {
                 await Start();

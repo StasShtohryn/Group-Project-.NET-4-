@@ -112,6 +112,14 @@
                 ImageSource="/Images/shutdown_mo.png"
                 Stretch="None" />
 
+    <ImageBrush x:Key="OpenFull_def"
+                ImageSource="/Images/OpenFull.png"
+                Stretch="None" />
+
+    <ImageBrush x:Key="OpenFull_mo"
+                ImageSource="/Images/OpenFull_Na.png"
+                Stretch="None" />
+
     <Style x:Key="ExitApp"
            TargetType="{x:Type Button}">
 
@@ -163,9 +171,72 @@
                 </ControlTemplate>
 
             </Setter.Value>
+            
+            
 
         </Setter>
+        
+        
 
     </Style>
 
+    <Style x:Key="FullApp"
+           TargetType="{x:Type Button}">
+
+        <Setter Property="Height"
+                Value="40" />
+        <Setter Property="Width"
+                Value="40" />
+        <Setter Property="HorizontalAlignment"
+                Value="Right" />
+        <Setter Property="VerticalAlignment"
+                Value="Top" />
+        <Setter Property="Margin"
+                Value="0,15,15,0" />
+
+        <Setter Property="Template">
+
+            <Setter.Value>
+
+                <ControlTemplate TargetType="{x:Type Button}">
+
+                    <Border x:Name="border"
+                            BorderThickness="0"
+                            Background="{StaticResource OpenFull_def}">
+
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="{StaticResource OpenFull_mo}" />
+
+                        </Trigger>
+
+                        <Trigger Property="IsPressed"
+                                 Value="True">
+
+                            <Setter Property="Background"
+                                    TargetName="border"
+                                    Value="{StaticResource OpenFull_mo}" />
+
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+
+            </Setter.Value>
+
+
+
+        </Setter>
+
+
+
+    </Style>
 </ResourceDictionary>

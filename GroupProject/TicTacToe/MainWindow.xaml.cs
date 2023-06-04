@@ -42,5 +42,12 @@ namespace Client
                 throw;
             }
         }
+
+        private void FullApp_Click(object sender, RoutedEventArgs e)
+        {
+            if(Application.Current.MainWindow.WindowState != System.Windows.WindowState.Maximized)
+            Application.Current.MainWindow.WindowState = System.Windows.WindowState.Maximized;
+            else Application.Current.MainWindow.WindowState = System.Windows.WindowState.Normal; 
+        }
     }
 }

@@ -9,6 +9,8 @@
         Title="MainWindow"
         Height="600"
         Width="850"
+        MinHeight="600"
+        MinWidth="850"
         ResizeMode="CanResize"
         AllowsTransparency="True"
         WindowStartupLocation="CenterScreen"
@@ -111,10 +113,13 @@
             </Grid>
 
         </Grid>
-        <Grid Visibility="{Binding IsEnableView_MDSPage}">
-
+        <Grid  Visibility="{Binding IsEnableView_MDSPage}">
+            <!--Visibility="{Binding IsEnableView_MDSPage}"-->
             <ContentControl x:Name="Pag"
                                 Content="{Binding CurrentViewGame}" />
+            <Button x:Name="FullApp"
+                Style="{StaticResource FullApp}"
+                Click="FullApp_Click" Margin="0,15,58,0" />
 
         </Grid>
         <Button x:Name="CloseApp"
