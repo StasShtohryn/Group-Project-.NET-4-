@@ -16,10 +16,14 @@
     <None Remove="Images\home_page.png" />
     <None Remove="Images\img_customer.png" />
     <None Remove="Images\img_home.png" />
+    <None Remove="Images\home_page.png" />
     <None Remove="Images\shutdown_def.png" />
     <None Remove="Images\shutdown_mo.png" />
     <None Remove="Images\img_game.png" />
     <None Remove="Images\Game_page.png" />
+    <None Remove="Images\OpenFull.png" />
+    <None Remove="Images\OpenFull_Na.png" />
+    <None Remove="Images\Game_pageXOX.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +36,14 @@
     <Content Include="Images\customer_page.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\home_page.png">
+	  
+    <Content Include="Images\Game_pageXOX.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+	  <Content Include="Images\OpenFull.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+	  <Content Include="Images\OpenFull_Na.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
 	<Content Include="Images\img_game.png">
@@ -45,6 +56,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\img_home.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+	  <Content Include="Images\home_page.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\shutdown_def.png">

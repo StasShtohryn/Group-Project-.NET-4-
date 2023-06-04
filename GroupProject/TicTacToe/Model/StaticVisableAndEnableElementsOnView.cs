@@ -10,5 +10,6 @@ namespace Client.Model
     {
         public static System.Windows.Visibility EnamleOnGame { get; set; }
         public static System.Windows.Visibility EnamleOnGamePage { get; set; }
+        public static bool Enablebuttongame { get; set; }
     }
 }
