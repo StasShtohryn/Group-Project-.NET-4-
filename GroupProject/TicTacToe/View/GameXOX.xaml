@@ -46,7 +46,7 @@
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
 
-                    <Button Grid.Column="0" Grid.Row="0" x:Name="B1" Content="{Binding Bt1 }" Command="{Binding Bts1}" FontSize="100"></Button>
+                    <Button Grid.Column="0" Grid.Row="0" x:Name="B1" Content="{Binding Bt1 }" Command="{Binding Bts1}" FontSize="100"/>
                     <Button Grid.Column="0" Grid.Row="1" x:Name="B4" Content="{Binding Bt4 }" Command="{Binding Bts4}" FontSize="100"></Button>
                     <Button Grid.Column="0" Grid.Row="2" x:Name="B7" Content="{Binding Bt7 }" Command="{Binding Bts7}" FontSize="100"></Button>
                     <Button Grid.Column="1" Grid.Row="0" x:Name="B2" Content="{Binding Bt2 }" Command="{Binding Bts2}" FontSize="100"></Button>
