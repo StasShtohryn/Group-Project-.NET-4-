@@ -11,6 +11,21 @@ namespace Client.ViewModel
 {
     class GameVM : Utilities.ViewModelBase
     {
+        string? message;
+
+        public string Message 
+        { 
+            get => message;
+            set 
+            {
+                if (message!=value)
+                {
+                    message = value;
+                    OnPropertyChanged();
+                }
+            }  
+        }
+
         private bool is_disableactivity;
         public bool IsDisableActivity
         {
@@ -43,8 +58,9 @@ namespace Client.ViewModel
             
             while (true)
             {
-                await StaticClient.Send("Start Game");
-                string answer = await StaticClient.Recive();
+                await StaticClient.Client.SendAsync("Start Game");
+                string answer = await StaticClient.Client.ReciveAsync();
+                Message = answer;
 
                 if (answer == "OK")
                 {
@@ -60,13 +76,17 @@ namespace Client.ViewModel
         }
         private RelayCommand open_Game;
         public ICommand OpenGame => open_Game ??= new RelayCommand(OpenGameX);
+
+
+
         private async void OpenGameX(object commandParameter)
         {
             StaticVisableAndEnableElementsOnView.Enablebuttongame = false;
-            Task.Run(async () =>
+            Task task = Task.Run(async () =>
             {
                 await Start();
             });
+            await task;
         }
     }
 }

@@ -54,19 +54,24 @@ namespace TicTacToe.ServerClient
                 {
                     var task1 = AcceptClientAsync();
                     var client2 = await task1;
-                    TcpClient client1;
-                    if (awaitingClients.Count!=0)
+                    string startGame = await ReceiveMsgAsync(client2);
+                    if (startGame.Equals("Start Game"))
                     {
-                        client1 = awaitingClients[0];
-                        awaitingClients.RemoveAt(0);
+                        TcpClient client1;
+                        if (awaitingClients.Count != 0)
+                        {
+                            client1 = awaitingClients[0];
+                            awaitingClients.RemoveAt(0);
+                        }
+                        else
+                        {
+                            awaitingClients.Add(client2);
+                            await SendMsgAsync(client2, "Waiting for second player");
+                            continue;
+                        }
+                        _ = StartGameAsync(client1, client2);
                     }
-                    else
-                    {
-                        awaitingClients.Add(client2);
-                        await SendMsgAsync(client2, "Waiting for second player");
-                        continue;
-                    }
-                    _ = StartGameAsync(client1, client2);
+                    
                 }
             }
             catch (Exception ex)

@@ -28,11 +28,13 @@
                             Stretch="Fill" />
             </Border.Background>
         </Border>
-        <Button Content="Button"
+        <Button Content="Start Game"
                 IsEnabled="{Binding IsDisableActivity}"
                 Command="{Binding OpenGame}"
                 
                 HorizontalAlignment="Left" Margin="190,302,0,0" VerticalAlignment="Top" Width="220"/>
+        <TextBlock Margin="190,248,182,308"  Width="220" Height="14" HorizontalAlignment="Left" 
+                   Foreground="White" TextAlignment="Center" RenderTransformOrigin="0.501,-1.771" Text="{Binding Message}"></TextBlock>
 
     </Grid>
 </UserControl>

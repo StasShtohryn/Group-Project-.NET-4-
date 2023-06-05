@@ -63,11 +63,13 @@ namespace Client.ViewModel
 
             try
             {
-                StaticClient.Init("127.0.0.1", 1234);
-                StaticClient.ConnectToServer();
-                await StaticClient.Send("Log in" + "\t" + CustomerID + "\t" + passwordHash);
+                StaticClient.Client?.Dispose();
+                StaticClient.Client  = new TicTacToe.Client.Client("127.0.0.1", 1234);
+                var client = StaticClient.Client;
+                client.ConnectToServer();
+                await client.SendAsync("Log in" + "\t" + CustomerID + "\t" + passwordHash);
 
-                string answer = await StaticClient.Recive();
+                string answer = await client.ReciveAsync();
 
                 if (answer.Equals("OK"))
                 {
@@ -82,7 +84,7 @@ namespace Client.ViewModel
             {
                 //retry
                 UTPallDate = ex.Message;
-                StaticClient.Dispose();
+                StaticClient.Client?.Dispose();
             }
 
         }

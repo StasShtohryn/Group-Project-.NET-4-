@@ -181,7 +181,8 @@ namespace Client.ViewModel
 
         public GameXOXVM()
         {
-            Bt9 = "X";
+            var client = StaticClient.Client;
+            var value = client.ReciveAsync();
         }
     }
 }

@@ -58,6 +58,7 @@ namespace TicTacToe.Client
 
         public void Dispose()
         {
+            _=SendAsync("Close connection");
             tcpClient?.Dispose();
         }
     }

@@ -3,36 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UserModel;
 
 namespace Client.Model
 {
     internal static class StaticClient
     {
-        static TicTacToe.Client.Client Client;
+        private static TicTacToe.Client.Client client;
 
-        public static void Init(string host, int port)
+        public static TicTacToe.Client.Client Client
         {
-            Client = new(host, port);
-        }
-
-        public static void ConnectToServer()
-        {
-            Client.ConnectToServer();
-        }
-
-        public static async Task Send(string message)
-        {
-            await Client.SendAsync(message);
-        }
-
-        public static async Task<string> Recive()
-        {
-            return await Client.ReciveAsync();
-        }
-
-        public static void Dispose()
-        {
-            Client.Dispose();
+            get { return client; }
+            set { client = value; }
         }
     }
 }
