@@ -160,6 +160,7 @@ namespace Client.ViewModel
         }
 
 
+
         public String TextMach
         {
             get { return buttonesString.TextMach; }

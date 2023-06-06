@@ -9,6 +9,8 @@ using System.Windows.Input;
 using System.Net.Sockets;
 using System.Windows;
 using System.Security.Cryptography;
+using System.Text.Json;
+using UserModel;
 
 namespace Client.ViewModel
 {
@@ -69,13 +71,15 @@ namespace Client.ViewModel
                 StaticClient.Client  = new TicTacToe.Client.Client("127.0.0.1", 1234);
                 var client = StaticClient.Client;
                 client.ConnectToServer();
-                await client.SendAsync("Log in" + "\t" + CustomerID + "\t" + passwordHash);
+                await client.SendAsync("Register" + "\t" + CustomerID + "\t" + passwordHash);
 
                 string answer = await client.ReciveAsync();
 
                 if (answer.Equals("OK"))
                 {
                     UTPallDate = "Registration is successful";
+                    var userMsg = await client.ReciveAsync();
+                    StaticUser.User = JsonSerializer.Deserialize<User>(userMsg);
                 }
                 else if (answer.Equals("This login already exists"))
                 {

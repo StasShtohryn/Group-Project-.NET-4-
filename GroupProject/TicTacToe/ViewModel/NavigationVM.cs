@@ -62,7 +62,6 @@ namespace Client.ViewModel
             GameCommandXOX = new RelayCommand(GameXOX);
             //// Startup Page
             CurrentView = new LogginVM();
-            CurrentViewGame = new GameXOXVM();
             Task.Run(() =>
             {
                while (true)
@@ -71,6 +70,7 @@ namespace Client.ViewModel
                     IsEnableView_MDSPage = StaticVisableAndEnableElementsOnView.EnamleOnGamePage;
                     if (IsEnableView_MDS == System.Windows.Visibility.Hidden)
                     {
+                        CurrentViewGame = new GameXOXVM();
                         IsEnableView_MDSPage = System.Windows.Visibility.Visible;
                         break;
                     }

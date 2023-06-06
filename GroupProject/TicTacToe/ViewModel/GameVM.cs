@@ -55,10 +55,9 @@ namespace Client.ViewModel
         async Task Start()
         {
 
-            
+            await StaticClient.Client.SendAsync("Start Game");
             while (true)
             {
-                await StaticClient.Client.SendAsync("Start Game");
                 string answer = await StaticClient.Client.ReciveAsync();
                 Message = answer;
 
