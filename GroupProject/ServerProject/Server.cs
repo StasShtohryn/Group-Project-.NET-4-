@@ -1,4 +1,6 @@
-﻿using ServerProject.Services;
+﻿using Azure.Core.Serialization;
+using ServerProject;
+using ServerProject.Services;
 using ServerProject.UserDb;
 using System;
 using System.Collections.Generic;
@@ -24,19 +26,19 @@ namespace TicTacToe.ServerClient
         Draw = 3
     }
 
-    public class Server
+    public class Server:IDisposable
     {
         TcpListener listener;
         TcpListener messageListener;
         IUserService _userService;
 
-        List<TcpClient> awaitingClients;
-        public Dictionary<User, TcpClient> currentClients;
+        Queue<Client> awaitingClients;
+        public List<Client> currentClients;
         public Server(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
-            awaitingClients = new List<TcpClient>();
-            currentClients = new Dictionary<User, TcpClient>();
+            awaitingClients = new Queue<Client>();
+            currentClients = new List<Client>();
             _userService = new UserService(new UserDbContext());
         }
 
@@ -53,25 +55,8 @@ namespace TicTacToe.ServerClient
                 while (true)
                 {
                     var task1 = AcceptClientAsync();
-                    var client2 = await task1;
-                    string startGame = await ReceiveMsgAsync(client2);
-                    if (startGame.Equals("Start Game"))
-                    {
-                        TcpClient client1;
-                        if (awaitingClients.Count != 0)
-                        {
-                            client1 = awaitingClients[0];
-                            awaitingClients.RemoveAt(0);
-                        }
-                        else
-                        {
-                            awaitingClients.Add(client2);
-                            await SendMsgAsync(client2, "Waiting for second player");
-                            continue;
-                        }
-                        _ = StartGameAsync(client1, client2);
-                    }
-                    
+                    var client = await task1;
+                    _ = BeforeGamePreparing(client);
                 }
             }
             catch (Exception ex)
@@ -82,70 +67,126 @@ namespace TicTacToe.ServerClient
 
         }
 
-
-        private async Task<TcpClient> AcceptClientAsync()
+        private async Task<Client> AcceptClientAsync()
         {
             while (true)
             {
                 var tcpClient = await listener.AcceptTcpClientAsync();
-                var tmp = await ReceiveMsgAsync(tcpClient);
+                var client = new Client(tcpClient);
+                var tmp = await client.ReceiveMsgAsync();
                 var action = tmp.Split("\t")[0];
                 var login = tmp.Split("\t")[1];
                 var password = tmp.Split("\t")[2];
-                User newUser = new User { Login = login, Password = password };
-                if (action.Equals("Log in"))
+                User newUser = null!;
+                if (currentClients.Count(x => x.User.Login == login) > 0)
                 {
-                    if (!CheckLogin(newUser))
+                    await client.SendMsgAsync( "You have another active session");
+                    tcpClient.Close();
+                    continue;
+                }
+                else if (action.Equals("Log in"))
+                {
+                    if (!CheckLogin(login, password))
                     {
-                        await SendMsgAsync(tcpClient, "Wrong login or password");
-                        tcpClient.Close();
+                        await client.SendMsgAsync("Wrong login or password");
+                        client.Dispose();
                         continue;
                     }
-                    await SendMsgAsync(tcpClient, "OK");
+                    newUser = _userService.GetUsers()?.FirstOrDefault(u => u.Login == login && u.Password == password)!;
+                    await client.SendMsgAsync("OK");
                 }
                 else if (action.Equals("Register"))
                 {
                     if (_userService.GetUsers().FirstOrDefault(u => u.Login == login) != null)
                     {
-                        await SendMsgAsync(tcpClient, "This login already exists");
-                        tcpClient.Close();
+                        await client.SendMsgAsync("This login already exists");
+                        client.Dispose();
                         continue;
                     }
-                    await SendMsgAsync(tcpClient, "OK");
+                    await client.SendMsgAsync("OK");
+                    newUser = new User { Login = login, Password = password };
                     await _userService.AddUser(newUser);
                 }
-                currentClients.Add(newUser, tcpClient);
-                return tcpClient;
+                client.User = newUser;
+                await client.SendUserAsync();
+                currentClients.Add(client);
+                return client;
             }
         }
 
-        private async Task StartGameAsync(TcpClient client1, TcpClient client2)
+        private async Task BeforeGamePreparing(Client client2)
+        {
+            string startGame = await client2.ReceiveMsgAsync();
+            if (startGame.Equals("Start Game"))
+            {
+                await CheckAwaitingClientsAsync(client2);
+            }
+            else if (startGame.Equals("Close connection"))
+            {
+                client2.Dispose();
+            }
+        }
+
+        private async Task CheckAwaitingClientsAsync(Client client2)
+        {
+            Client client1;
+            if (awaitingClients.Count != 0)
+            {
+                client1 = awaitingClients.Peek();
+                awaitingClients.Dequeue();
+                try
+                {
+                    await client1.SendMsgAsync("OK");
+
+                }
+                catch (Exception)
+                {
+                    awaitingClients.Enqueue(client2);
+                    await client2.SendMsgAsync( "Waiting for second player...");
+                    await CheckAwaitingClientsAsync(client2);
+                    return;
+                }
+                await client2.SendMsgAsync( "OK");
+                _ = StartGameAsync(client1, client2);
+            }
+            else
+            {
+                awaitingClients.Enqueue(client2);
+                await client2.SendMsgAsync("Waiting for second player...");
+                return;
+            }
+        }
+
+
+        private async Task StartGameAsync(Client client1, Client client2)
         {
             int[] board = new int[9];
             try
             {
-                await SendMsgAsync(client1, "X");
-                await SendMsgAsync(client2, "O");
+                await client1.SendMsgAsync( "X");
+                client1.ClientNumber = 1;
+                await client2.SendMsgAsync( "O");
+                client2.ClientNumber = 2;
                 while (true)
                 {
-                    int pos = int.Parse(await ReceiveMsgAsync(client1));
+                    int pos = int.Parse(await client1.ReceiveMsgAsync());
                     board[pos] = 1;
                     (bool endGame, GameResult res) = IsGameOver(board);
                     if (endGame)
                     {
                         await SendGameResultsAsync(res, client1, client2);
-                        return;
+                        break;
                     }
-                    await SendMsgAsync(client2, pos.ToString());
-                    pos = int.Parse(await ReceiveMsgAsync(client2));
+                    await client2.SendMsgAsync( pos.ToString());
+                    pos = int.Parse(await client2.ReceiveMsgAsync());
                     board[pos] = 2;
                     (endGame, res) = IsGameOver(board);
                     if (endGame)
                     {
                         await SendGameResultsAsync(res, client1, client2);
-                        return;
+                        break;
                     }
-                    await SendMsgAsync(client1, pos.ToString());
+                    await client1.SendMsgAsync( pos.ToString());
                 }
             }
             catch (Exception ex)
@@ -155,8 +196,8 @@ namespace TicTacToe.ServerClient
             }
             finally
             {
-                client1.Close();
-                client2.Close();
+                client1.Dispose();
+                client2.Dispose();
             }
         }
 
@@ -181,62 +222,38 @@ namespace TicTacToe.ServerClient
             return (false, GameResult.Continue);
         }
 
-        private async Task SendGameResultsAsync(GameResult res, TcpClient client1, TcpClient client2)
+        private async Task SendGameResultsAsync(GameResult res, Client client1, Client client2)
         {
             if (res == GameResult.WinX)
             {
-                await SendMsgAsync(client1, "Win");
-                await SendMsgAsync(client2, "Loose");
+                await client1.SendMsgAsync("Win");
+                await client2.SendMsgAsync("Loose");
             }
             else if (res == GameResult.WinO)
             {
-                await SendMsgAsync(client1, "Loose");
-                await SendMsgAsync(client2, "Win");
+                await client1.SendMsgAsync("Loose");
+                await client2.SendMsgAsync( "Win");
             }
             else
             {
-                await SendMsgAsync(client1, "Draw");
-                await SendMsgAsync(client2, "Draw");
+                await client1.SendMsgAsync("Draw");
+                await client2.SendMsgAsync("Draw");
             }
         }
 
-        public async Task<string> ReceiveMsgAsync(TcpClient tcpClient)
-        {
-            var stream = tcpClient.GetStream();
-            var size = new byte[4];
-            await stream.ReadAsync(size, 0, size.Length);
-            var buffer = new byte[BitConverter.ToInt32(size)];
-            await stream.ReadAsync(buffer, 0, buffer.Length);
-            return Encoding.UTF8.GetString(buffer);
-        }
-
-        public async Task SendMsgAsync(TcpClient tcpClient, string? msg)
-        {
-            var buffer = Encoding.UTF8.GetBytes(msg);
-            var stream = tcpClient.GetStream();
-            int size = buffer.Length;
-            await stream.WriteAsync(BitConverter.GetBytes(size));
-            await stream.WriteAsync(buffer);
-            await stream.FlushAsync();
-        }
-
-        private bool CheckLogin(User? newUser)
+        private bool CheckLogin(string? login, string? pass)
         {
             User user;
-            if ((user = _userService.GetUsers()?.FirstOrDefault(u => u.Login == newUser.Login)) != null)
+            if ((user = _userService.GetUsers()?.FirstOrDefault(u => u.Login == login)) != null)
             {
-                if (user.Password.Equals(newUser.Password))
+                if (user.Password.Equals(pass))
                     return true;
             }
             return false;
         }
 
-        public void StopListening()
+        public void Dispose()
         {
-            foreach (var item in currentClients)
-            {
-                item.Value.Dispose();
-            }
             listener.Stop();
         }
     }
