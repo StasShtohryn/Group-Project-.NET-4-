@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -76,6 +79,7 @@ namespace Client.ViewModel
         private async void BTp1(object obj)
         {
             await Client.SendAsync("1");
+            isMyTurn = false;
         }
 
         public ICommand Bts2 => bt_2 ??= new RelayCommand(BTp2, CanExecuteMethod);
@@ -83,6 +87,7 @@ namespace Client.ViewModel
         private async void BTp2(object obj)
         {
             await Client.SendAsync("2");
+            isMyTurn = false;
         }
 
         public ICommand Bts3 => bt_3 ??= new RelayCommand(BTp3, CanExecuteMethod);
@@ -90,6 +95,7 @@ namespace Client.ViewModel
         private async void BTp3(object obj)
         {
             await Client.SendAsync("3");
+            isMyTurn = false;
         }
 
         public ICommand Bts4 => bt_4 ??= new RelayCommand(BTp4, CanExecuteMethod);
@@ -97,6 +103,7 @@ namespace Client.ViewModel
         private async void BTp4(object obj)
         {
             await Client.SendAsync("4");
+            isMyTurn = false;
         }
 
         public ICommand Bts5 => bt_5 ??= new RelayCommand(BTp5, CanExecuteMethod);
@@ -104,6 +111,7 @@ namespace Client.ViewModel
         private async void BTp5(object obj)
         {
             await Client.SendAsync("5");
+            isMyTurn = false;
         }
 
         public ICommand Bts6 => bt_6 ??= new RelayCommand(BTp6, CanExecuteMethod);
@@ -111,6 +119,7 @@ namespace Client.ViewModel
         private async void BTp6(object obj)
         {
             await Client.SendAsync("6");
+            isMyTurn = false;
         }
 
         public ICommand Bts7 => bt_7 ??= new RelayCommand(BTp7, CanExecuteMethod);
@@ -118,6 +127,7 @@ namespace Client.ViewModel
         private async void BTp7(object obj)
         {
             await Client.SendAsync("7");
+            isMyTurn = false;
         }
 
         public ICommand Bts8 => bt_8 ??= new RelayCommand(BTp8, CanExecuteMethod);
@@ -125,6 +135,7 @@ namespace Client.ViewModel
         private async void BTp8(object obj)
         {
             await Client.SendAsync("8");
+            isMyTurn = false;
         }
 
         public ICommand Bts9 => bt_9 ??= new RelayCommand(BTp9, CanExecuteMethod);
@@ -132,25 +143,37 @@ namespace Client.ViewModel
         private async void BTp9(object obj)
         {
             await Client.SendAsync("9");
+            isMyTurn = false;
         }
 
-        private RelayCommand _surrender;
-        private RelayCommand _offer_a_draw;
+
+        private RelayCommand _press_button;
+        public ICommand PressButton => _press_button ??= new RelayCommand(PressButtonAsync, CanExecuteMethod);
+
+        private async void PressButtonAsync(object obj)
+        {
+            await Client.SendAsync(obj.ToString());
+            isMyTurn = false;
+        }
+
+        //private RelayCommand _surrender;
+        //private RelayCommand _offer_a_draw;
         private RelayCommand _Ask_for_a_pause;
+        private RelayCommand _send_message;
 
-        public ICommand Surrender => _surrender ??= new RelayCommand(surrenderBt, CanExecuteMethod);
+        //public ICommand Surrender => _surrender ??= new RelayCommand(surrenderBt, CanExecuteMethod);
 
-        private async void surrenderBt(object obj)
-        {
-            await Client.SendAsync("Surrender");
-        }
+        //private async void surrenderBt(object obj)
+        //{
+        //    await Client.SendAsync("Surrender");
+        //}
 
-        public ICommand OfferADraw => _offer_a_draw ??= new RelayCommand(offer_a_drawBt, CanExecuteMethod);
+        //public ICommand OfferADraw => _offer_a_draw ??= new RelayCommand(offer_a_drawBt, CanExecuteMethod);
 
-        private async void offer_a_drawBt(object obj)
-        {
-            await Client.SendAsync("Draw");
-        }
+        //private async void offer_a_drawBt(object obj)
+        //{
+        //    await Client.SendAsync("Draw");
+        //}
 
         public ICommand AskForAPause => _Ask_for_a_pause ??= new RelayCommand(Ask_For_A_PauseBt, CanExecuteMethod);
 
@@ -159,6 +182,15 @@ namespace Client.ViewModel
             await Client.SendAsync("Pause");
         }
 
+        public ICommand SendMessage => _send_message ??= new RelayCommand(SendMessageAsync);
+
+        async void SendMessageAsync(object obj)
+        {
+            await MessagesClient.SendAsync(currentMessage);
+            Messages.Add("You:  " + currentMessage);
+            currentMessage = string.Empty;
+
+        }
 
 
         public String TextMach
@@ -182,30 +214,41 @@ namespace Client.ViewModel
             set { buttonesString.TextSurenderMach = value; OnPropertyChanged(); }
         }
 
-        
+        string curMsg;
+        public String currentMessage
+        {
+            get { return curMsg; }
+            set { curMsg = value; OnPropertyChanged(); }
+        }
+
+
         async Task StartGame()
         {
-            
+            string user_json = await Client.ReciveAsync();
+            user = JsonSerializer.Deserialize<UserModel.User>(user_json);
+
             string enemySymbol = string.Empty;
             string mySymbol = await StaticClient.Client.ReciveAsync();
-            
+
             if (mySymbol == "X")
             {
                 enemySymbol = "O";
                 isMyTurn = true;
             }
-                
+
             else
             {
                 enemySymbol = "X";
                 isMyTurn = false;
             }
-                
 
-            while(true)
+
+            _ = ReciveMessageAsync();
+
+            while (true)
             {
                 string answer = await StaticClient.Client.ReciveAsync();
-               
+                isMyTurn = true;
 
                 if (answer.Equals("1"))
                     Bt1 = enemySymbol;
@@ -234,28 +277,62 @@ namespace Client.ViewModel
                 else if (answer.Equals("9"))
                     Bt9 = enemySymbol;
 
+                else if (answer.Equals("Request to draw"))
+                {
+                    var res = MessageBox.Show(answer, "Request to draw", MessageBoxButton.YesNo);
+
+                    if (res == MessageBoxResult.OK)
+                        await Client.SendAsync("Yes");
+                    else
+                        await Client.SendAsync("No");
+
+                    isMyTurn = false;
+                }
+
                 else
                 {
                     MessageBox.Show(answer);
                     break;
                 }
+
             }
 
         }
 
         bool CanExecuteMethod(object? param)
         {
-            return isMyTurn;
+            string str = param.ToString();
+            return isMyTurn && str != "X" && str != "O";
         }
 
+        async Task ReciveMessageAsync()
+        {
+            while (true)
+            {
+                string msg = await MessagesClient.ReciveAsync();
+                Messages.Add(msg);
+            }
+
+        }
+
+
+
         TicTacToe.Client.Client Client;
+        TicTacToe.Client.Client MessagesClient;
+
+        public ObservableCollection<string> Messages;
+
+        UserModel.User user;
         public GameXOXVM()
         {
             Client = StaticClient.Client;
+            MessagesClient = StaticMessageClient.Client;
+
+            Messages = new();
 
             isMyTurn = false;
             _ = StartGame();
-            
+
         }
     }
 }
