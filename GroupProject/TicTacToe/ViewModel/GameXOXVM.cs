@@ -16,9 +16,8 @@ namespace Client.ViewModel
 {
     class GameXOXVM : Utilities.ViewModelBase
     {
-        List<string> Buttones;
         ButtonesString buttonesString = new ButtonesString();
-        bool isMyTurn;
+        bool isMyTurn = true;
         public String Bt1
         {
             get { return buttonesString.Bt1; }
@@ -247,7 +246,6 @@ namespace Client.ViewModel
             while (true)
             {
                 string answer = await StaticClient.Client.ReciveAsync();
-                isMyTurn = true;
 
                 if (answer.Equals("1"))
                     Bt1 = enemySymbol;
@@ -286,6 +284,7 @@ namespace Client.ViewModel
                         await Client.SendAsync("No");
 
                     isMyTurn = false;
+                    continue;
                 }
 
                 else
@@ -293,6 +292,7 @@ namespace Client.ViewModel
                     MessageBox.Show(answer);
                     break;
                 }
+                isMyTurn = true;
 
             }
 
@@ -300,8 +300,12 @@ namespace Client.ViewModel
 
         private bool CanExecuteMethod(object? param)
         {
-            string str = param.ToString();
-            return isMyTurn && str != "X" && str != "O";
+            if (param!=null)
+            {
+                string str = param.ToString();
+                return isMyTurn && str != "X" && str != "O";
+            }
+            return isMyTurn;
         }
 
         async Task ReciveMessageAsync()
@@ -324,14 +328,11 @@ namespace Client.ViewModel
         UserModel.User user;
         public GameXOXVM()
         {
-            if (StaticClient.OpenWindow)
-            {
+                Messages = new ObservableCollection<string>();
                 Client = StaticClient.Client;
                 MessagesClient = StaticMessageClient.Client;
-                isMyTurn = false;
                 _ = StartGame();
                 StaticClient.OpenWindow = false;
-            }
         }
     }
 }

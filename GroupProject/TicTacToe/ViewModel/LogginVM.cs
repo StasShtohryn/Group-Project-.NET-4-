@@ -80,9 +80,9 @@ namespace Client.ViewModel
 
                     UTPallDate = "Login is successful";
                 }
-                else if (answer.Equals("Wrong login or password"))
+                else
                 {
-                    throw new Exception("Wrong login or password");
+                    throw new Exception(answer);
                 }
             }
             catch (Exception ex)

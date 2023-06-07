@@ -35,13 +35,13 @@ namespace TicTacToe.ServerClient
         object? _lockObject;
 
         Queue<Client> awaitingClients;
-        public List<Client> currentClients;
+        //public List<Client> currentClients;
         public Server(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
             chatListener = new TcpListener(address, 4321);
             awaitingClients = new Queue<Client>();
-            currentClients = new List<Client>();
+            //currentClients = new List<Client>();
             _userService = new UserService(new UserDbContext());
             _lockObject = new object();
         }
@@ -84,13 +84,13 @@ namespace TicTacToe.ServerClient
                     var login = tmp.Split("\t")[1];
                     var password = tmp.Split("\t")[2];
                     User newUser = null!;
-                    if (currentClients.Count(x => x.Login == login) > 0)
-                    {
-                        await client.SendMsgAsync("You have another active session");
-                        client.Dispose();
-                        continue;
-                    }
-                    else if (action.Equals("Log in"))
+                    //if (currentClients.Count(x => x.Login == login) > 0)
+                    //{
+                    //    await client.SendMsgAsync("You have another active session");
+                    //    client.Dispose();
+                    //    continue;
+                    //}
+                    if (action.Equals("Log in"))
                     {
                         if (!CheckLogin(login, password))
                         {
@@ -116,7 +116,7 @@ namespace TicTacToe.ServerClient
                     ChattingSettingsAsync(client);
                     client.User = newUser;
                     client.userService = _userService;
-                    currentClients.Add(client);
+                    //currentClients.Add(client);
                     return client;
                 }
                 catch (Exception)
@@ -145,16 +145,21 @@ namespace TicTacToe.ServerClient
             else if (startGame.Equals("Close connection"))
             {
                 client2.Dispose();
-                currentClients.Remove(client2);
+                //currentClients.Remove(client2);
             }
         }
 
         private async Task CheckAwaitingClientsAsync(Client client2)
         {
-            Client client1;
             if (awaitingClients.Count != 0)
             {
-                client1 = awaitingClients.Peek();
+                Client client1 = awaitingClients.Peek();
+                if (client1.Login == client2.Login)
+                {
+                    awaitingClients.Enqueue(client2);
+                    await client2.SendMsgAsync("Waiting for second player...");
+                    return;
+                }
                 awaitingClients.Dequeue();
                 try
                 {
@@ -163,8 +168,8 @@ namespace TicTacToe.ServerClient
                 }
                 catch (Exception)
                 {
-                    awaitingClients.Enqueue(client2);
-                    await client2.SendMsgAsync("Waiting for second player...");
+                    client1.Dispose();
+                    //currentClients.Remove(client1);
                     await CheckAwaitingClientsAsync(client2);
                     return;
                 }
@@ -220,9 +225,9 @@ namespace TicTacToe.ServerClient
             finally
             {
                 client1.Dispose();
-                currentClients.Remove(client1);
+                //currentClients.Remove(client1);
                 client2.Dispose();
-                currentClients.Remove(client2);
+                //currentClients.Remove(client2);
             }
         }
 
@@ -324,7 +329,7 @@ namespace TicTacToe.ServerClient
             {
 
                 client.Dispose();
-                currentClients.Remove(client);
+                //currentClients.Remove(client);
             }
            
         }
