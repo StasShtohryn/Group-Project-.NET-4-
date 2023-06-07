@@ -199,6 +199,24 @@ namespace Client.ViewModel
         private async void StartNewGame(object obj)
         {
             await Client.SendAsync("Start Game");
+
+            while (true)
+            {
+                string answer = await Client.ReciveAsync();
+                //Message = answer;
+
+                if (answer == "OK")
+                {
+                    IsGameOver = false;
+                    ClearBoard();
+                    _ = StartGame();
+                    break;
+                }
+                else if (answer == "Waiting for second player...")
+                    continue;
+
+
+            }
         }
 
 
@@ -234,7 +252,7 @@ namespace Client.ViewModel
         async Task StartGame()
         {
             string user_json = await Client.ReciveAsync();
-            user = JsonSerializer.Deserialize<UserModel.User>(user_json);
+            User = JsonSerializer.Deserialize<UserModel.User>(user_json);
 
             string enemySymbol = string.Empty;
             string mySymbol = await StaticClient.Client.ReciveAsync();
@@ -353,6 +371,27 @@ namespace Client.ViewModel
         public ObservableCollection<string> Messages;
 
         UserModel.User user;
+
+
+        public UserModel.User User
+        {
+            get { return user; }
+            set 
+            { 
+                if (user != value)
+                {
+                    user = value;
+
+                    TextMach = user.Games.ToString();
+                    TextDefeatMach = user.Defeats.ToString();
+                    TextVictoryMach = user.Wins.ToString();
+                    TextSurenderMach = user.Draws.ToString();
+                }
+                   
+
+            }
+        }
+
         private bool IsGameOver = false;
 
         public GameXOXVM()
