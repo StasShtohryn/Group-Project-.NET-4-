@@ -251,14 +251,18 @@ namespace TicTacToe.ServerClient
                 await SendGameResultsAsync(GameResult.Defeat, client1, client2);
                 return true;
             }
-            else if (msg.Equals("Request Draw"))
+            else if (msg.Equals("Request to draw"))
             {
                 await client2.SendMsgAsync(msg);
             }
-            else if (msg.Equals("Agree to Draw"))
+            else if (msg.Equals("Agree"))
             {
                 await SendGameResultsAsync(GameResult.Draw, client1, client2);
                 return true;
+            }
+            else if (msg.Equals("Disagree"))
+            {
+                await client2.SendMsgAsync(msg);
             }
             return false;
         }

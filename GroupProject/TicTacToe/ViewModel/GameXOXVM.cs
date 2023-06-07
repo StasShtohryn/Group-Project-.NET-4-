@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using Client.Model;
 using Client.Utilities;
+using UserModel;
 
 namespace Client.ViewModel
 {
@@ -159,6 +160,7 @@ namespace Client.ViewModel
         //private RelayCommand _offer_a_draw;
         private RelayCommand _Ask_for_a_pause;
         private RelayCommand _send_message;
+        private RelayCommand _new_game;
 
         //public ICommand Surrender => _surrender ??= new RelayCommand(surrenderBt, CanExecuteMethod);
 
@@ -189,6 +191,14 @@ namespace Client.ViewModel
             Messages.Add("You:  " + currentMessage);
             currentMessage = string.Empty;
 
+        }
+
+
+        public ICommand NewGame => _new_game ??= new RelayCommand(StartNewGame, CanExecuteNewGameMethod);
+
+        private async void StartNewGame(object obj)
+        {
+            await Client.SendAsync("Start Game");
         }
 
 
@@ -279,9 +289,9 @@ namespace Client.ViewModel
                     var res = MessageBox.Show(answer, "Request to draw", MessageBoxButton.YesNo);
 
                     if (res == MessageBoxResult.OK)
-                        await Client.SendAsync("Yes");
+                        await Client.SendAsync("Agree");
                     else
-                        await Client.SendAsync("No");
+                        await Client.SendAsync("Disagree");
 
                     isMyTurn = false;
                     continue;
@@ -290,6 +300,7 @@ namespace Client.ViewModel
                 else
                 {
                     MessageBox.Show(answer);
+                    IsGameOver = true;
                     break;
                 }
                 isMyTurn = true;
@@ -308,6 +319,11 @@ namespace Client.ViewModel
             return isMyTurn;
         }
 
+        private bool CanExecuteNewGameMethod(object? param)
+        {
+            return IsGameOver;
+        }
+
         async Task ReciveMessageAsync()
         {
             while (true)
@@ -318,6 +334,22 @@ namespace Client.ViewModel
 
         }
 
+        void ClearBoard()
+        {
+            Bt1 = string.Empty;
+            Bt2 = string.Empty;
+            Bt3 = string.Empty;
+            Bt4 = string.Empty;
+            Bt5 = string.Empty;
+            Bt6 = string.Empty;
+            Bt7 = string.Empty;
+            Bt8 = string.Empty;
+            Bt9 = string.Empty;
+
+            currentMessage = string.Empty;
+            Messages.Clear();
+        }
+
 
 
         TicTacToe.Client.Client Client;
@@ -326,11 +358,15 @@ namespace Client.ViewModel
         public ObservableCollection<string> Messages;
 
         UserModel.User user;
+        private bool IsGameOver = false;
+
         public GameXOXVM()
         {
                 Messages = new ObservableCollection<string>();
                 Client = StaticClient.Client;
                 MessagesClient = StaticMessageClient.Client;
+                isMyTurn = true;
+                Messages = new();
                 _ = StartGame();
                 StaticClient.OpenWindow = false;
         }
