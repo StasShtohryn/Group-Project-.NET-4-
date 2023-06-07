@@ -16,5 +16,7 @@ namespace Client.Model
             get { return client; }
             set { client = value; }
         }
+
+        public static bool OpenWindow { get; set; } = true;
     }
 }

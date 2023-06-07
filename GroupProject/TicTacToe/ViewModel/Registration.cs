@@ -81,7 +81,6 @@ namespace Client.ViewModel
                     StaticMessageClient.Client.ConnectToServer();
 
                     UTPallDate = "Registration is successful";
-                    
                 }
                 else if (answer.Equals("This login already exists"))
                 {

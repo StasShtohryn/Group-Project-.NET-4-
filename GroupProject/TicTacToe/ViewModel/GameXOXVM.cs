@@ -244,7 +244,6 @@ namespace Client.ViewModel
 
 
             _ = ReciveMessageAsync();
-
             while (true)
             {
                 string answer = await StaticClient.Client.ReciveAsync();
@@ -299,7 +298,7 @@ namespace Client.ViewModel
 
         }
 
-        bool CanExecuteMethod(object? param)
+        private bool CanExecuteMethod(object? param)
         {
             string str = param.ToString();
             return isMyTurn && str != "X" && str != "O";
@@ -325,14 +324,14 @@ namespace Client.ViewModel
         UserModel.User user;
         public GameXOXVM()
         {
-            Client = StaticClient.Client;
-            MessagesClient = StaticMessageClient.Client;
-
-            Messages = new();
-
-            isMyTurn = false;
-            _ = StartGame();
-
+            if (StaticClient.OpenWindow)
+            {
+                Client = StaticClient.Client;
+                MessagesClient = StaticMessageClient.Client;
+                isMyTurn = false;
+                _ = StartGame();
+                StaticClient.OpenWindow = false;
+            }
         }
     }
 }

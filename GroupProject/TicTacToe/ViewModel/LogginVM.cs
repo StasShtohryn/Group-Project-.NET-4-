@@ -79,7 +79,6 @@ namespace Client.ViewModel
                     StaticMessageClient.Client.ConnectToServer();
 
                     UTPallDate = "Login is successful";
-                    
                 }
                 else if (answer.Equals("Wrong login or password"))
                 {
