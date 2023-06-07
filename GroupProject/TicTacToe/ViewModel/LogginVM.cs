@@ -75,6 +75,9 @@ namespace Client.ViewModel
 
                 if (answer.Equals("OK"))
                 {
+                    StaticMessageClient.Client = new("127.0.0.1", 4321);
+                    StaticMessageClient.Client.ConnectToServer();
+
                     UTPallDate = "Login is successful";
                 }
                 else if (answer.Equals("Wrong login or password"))
