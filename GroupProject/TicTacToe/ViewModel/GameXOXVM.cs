@@ -185,7 +185,9 @@ namespace Client.ViewModel
         
         async Task StartGame()
         {
+
             
+
             string enemySymbol = string.Empty;
             string mySymbol = await StaticClient.Client.ReciveAsync();
             
@@ -200,9 +202,10 @@ namespace Client.ViewModel
                 enemySymbol = "X";
                 isMyTurn = false;
             }
-                
+            messageClient = new TicTacToe.Client.Client("127.0.0.1", 4321);
+            messageClient.ConnectToServer();
 
-            while(true)
+            while (true)
             {
                 string answer = await StaticClient.Client.ReciveAsync();
                
@@ -243,19 +246,24 @@ namespace Client.ViewModel
 
         }
 
-        bool CanExecuteMethod(object? param)
+        private bool CanExecuteMethod(object? param)
         {
             return isMyTurn;
         }
 
         TicTacToe.Client.Client Client;
+        TicTacToe.Client.Client messageClient;
         public GameXOXVM()
         {
-            Client = StaticClient.Client;
+            if (StaticClient.OpenWindow)
+            {
+                Client = StaticClient.Client;
 
-            isMyTurn = false;
-            _ = StartGame();
-            
+                isMyTurn = false;
+                _ = StartGame();
+                StaticClient.OpenWindow = false;
+            }
+
         }
     }
 }

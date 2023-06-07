@@ -7,7 +7,7 @@ using UserModel;
 
 namespace ServerProject.Services
 {
-    internal interface IUserService
+    public interface IUserService
     {
         IEnumerable<User> GetUsers();
         Task UpdateUser(User user);

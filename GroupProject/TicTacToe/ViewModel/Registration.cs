@@ -78,8 +78,6 @@ namespace Client.ViewModel
                 if (answer.Equals("OK"))
                 {
                     UTPallDate = "Registration is successful";
-                    var userMsg = await client.ReciveAsync();
-                    StaticUser.User = JsonSerializer.Deserialize<User>(userMsg);
                 }
                 else if (answer.Equals("This login already exists"))
                 {
