@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using UserModel;
@@ -35,17 +36,46 @@ namespace Client.ViewModel
             set { RFG = value; OnPropertyChanged(); }
         }
 
+
+        private bool _EnableElementsVM;
+        public bool EnableElementsVM
+        {
+            get { return _EnableElementsVM; }
+            set { _EnableElementsVM = value; OnPropertyChanged(); }
+        }
+
+
         public LogginVM()
         {
             _pageModel = new PageModel();
+            StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register = true;
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    EnableElementsVM = StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register;
+                    if(EnableElementsVM == false )
+                    {
+                        break;
+                    }
+                }
+            });
             //CustomerID = "das";
             //PoswordLoggins = "2222";
         }
+
+
+
+
 
         private RelayCommand logginOn_Server;
         public ICommand LogginOnServer => logginOn_Server ??= new RelayCommand(PerformLogginOnServer);
         private async void PerformLogginOnServer(object commandParameter)
         {
+
+
+
             UTPallDate = CustomerID + " " + PoswordLoggins;
 
             //compute hash
@@ -79,6 +109,10 @@ namespace Client.ViewModel
                     StaticMessageClient.Client.ConnectToServer();
 
                     UTPallDate = "Login is successful";
+                    StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register = false;
+                    Thread.Sleep(1500);
+                    StaticVisableAndEnableElementsOnView.EnamleOnButtonGame = System.Windows.Visibility.Visible;
+                    StaticVisableAndEnableElementsOnView.EnamleOnLoggingGame = System.Windows.Visibility.Hidden;
                 }
                 else
                 {

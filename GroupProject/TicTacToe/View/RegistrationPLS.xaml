@@ -9,11 +9,11 @@
              d:DesignWidth="622"
              Style="{StaticResource Page_Style}">
 
-    <UserControl.DataContext>
+    <!--<UserControl.DataContext>
         <vm:Registration />
-    </UserControl.DataContext>
+    </UserControl.DataContext>-->
 
-    <Grid Margin="15">
+    <Grid Margin="15" IsEnabled="{Binding EnableElementsVM}">
 
         <Border CornerRadius="0,20,20,0">
             <Border.Background>
@@ -22,7 +22,7 @@
             </Border.Background>
         </Border>
 
-        <TextBlock Text="Loggin :"
+        <TextBlock Text="Login :"
                    Foreground="#DBDBDB"
                    FontSize="12"
                    HorizontalAlignment="Left"
@@ -30,7 +30,7 @@
                    FontFamily="/Fonts/#Rubik Medium"
                    Margin="70,138,0,0" />
 
-        <TextBlock Text="Posword :"
+        <TextBlock Text="Password :"
                    Foreground="#DBDBDB"
                    FontSize="12"
                    HorizontalAlignment="Left"

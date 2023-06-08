@@ -64,7 +64,7 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Margin="10 10 10 10" x:Name="Lose" Command="{Binding PressButton}" CommandParameter = "Surrender" >Сдаться</Button>
+                        <Button Grid.Column="0" Margin="10 10 10 10" x:Name="Lose" Command="{Binding PressButton}"  CommandParameter = "Surrender" >Сдаться</Button>
                         <Button Grid.Column="1" Margin="10 10 10 10" x:Name="IsDrawAll" Command="{Binding PressButton}" CommandParameter = "Request to draw">Предложить нечью</Button>
                         <Button Grid.Column="2" Margin="10 10 10 10" x:Name="TimeOut" Command="{Binding NewGame}">Новая игра</Button>
                     </Grid>
@@ -89,26 +89,87 @@
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" HorizontalAlignment="Center" Text="{Binding TextMach}"
+                            
+                            <Grid Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Mach"
+                                       Foreground="#CED565"
+                                       FontSize="12"
+                                       FontFamily="/Fonts/#Rubik Medium"
+                                       ></TextBlock>
+
+                                <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding TextMach}"
                                        Foreground="#CED565"
                                        FontSize="25"
                                        FontFamily="/Fonts/#Rubik Medium"
                                        ></TextBlock>
-                            <TextBlock Grid.Column="1" HorizontalAlignment="Center" Text="{Binding TextDefeatMach}"
+                            </Grid>
+                            
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Defeat Mach"
+                                       Foreground="#CED565"
+                                       FontSize="12"
+                                       FontFamily="/Fonts/#Rubik Medium"
+                                       ></TextBlock>
+
+                                <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding TextDefeatMach}"
                                        Foreground="#CED565"
                                        FontSize="25"
                                        FontFamily="/Fonts/#Rubik Medium"
                                        ></TextBlock>
-                            <TextBlock Grid.Column="2" HorizontalAlignment="Center" Text="{Binding TextVictoryMach}"
+                            </Grid>
+                            
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Victory Mach"
+                                       Foreground="#CED565"
+                                       FontSize="12"
+                                       FontFamily="/Fonts/#Rubik Medium"
+                                       ></TextBlock>
+
+                                <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding TextVictoryMach}"
                                        Foreground="#CED565"
                                        FontSize="25"
                                        FontFamily="/Fonts/#Rubik Medium"
                                        ></TextBlock>
-                            <TextBlock Grid.Column="3" HorizontalAlignment="Center" Text="{Binding TextSurenderMach}"
+                            </Grid>
+                            <Grid Grid.Column="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="0.2*"></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="Surender Mach"
+                                       Foreground="#CED565"
+                                       FontSize="12"
+                                       FontFamily="/Fonts/#Rubik Medium"
+                                       ></TextBlock>
+
+                                <TextBlock Grid.Row="1" HorizontalAlignment="Center" Text="{Binding TextSurenderMach}"
                                        Foreground="#CED565"
                                        FontSize="25"
                                        FontFamily="/Fonts/#Rubik Medium"
                                        ></TextBlock>
+                            </Grid>
+                            
+                            
+                            
+                            
                         </Grid>
                     </Grid>
                     
@@ -118,7 +179,7 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition Height="40"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" ItemsSource="{Binding Messages, UpdateSourceTrigger=PropertyChanged}"></ListBox>
+                    <ListBox Grid.Row="0" ItemsSource="{Binding Messages, UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}"></ListBox>
                     <Grid Grid.Row="1" Margin="0 8 0 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="9*"></ColumnDefinition>

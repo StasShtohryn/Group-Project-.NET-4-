@@ -42,33 +42,50 @@ namespace Client.ViewModel
             set { is_EnableViewMDS = value; OnPropertyChanged(); }
         }
 
-        
-        
+
+        private System.Windows.Visibility _desebleREG_Log;
+        public System.Windows.Visibility DesebleREG_Log
+        {
+            get { return _desebleREG_Log; }
+            set { _desebleREG_Log = value; OnPropertyChanged(); }
+        }
+
+        private System.Windows.Visibility _enableButtnosR_startGame;
+        public System.Windows.Visibility EnableButtnosR_startGame
+        {
+            get { return _enableButtnosR_startGame; }
+            set { _enableButtnosR_startGame = value; OnPropertyChanged(); }
+        }
         public ICommand LogginCommand { get; set; }
         public ICommand RegisterCommand { get; set; }
         public ICommand GameCommand { get; set; }
         //public ICommand GameCommandXOX { get; set; }
 
-        private void Loggin(object obj) => CurrentView = new LogginVM();
-        private void Register(object obj) => CurrentView = new Registration();
-        private void Game(object obj) => CurrentView = new GameVM();
+        private void Loggin(object obj) => CurrentView = StaticVisableAndEnableElementsOnView.Loggin;
+        private void Register(object obj) => CurrentView = StaticVisableAndEnableElementsOnView.Registration;
+        private void Game(object obj) => CurrentView = StaticVisableAndEnableElementsOnView.GameVM;
         //private void GameXOX(object obj) => CurrentView = new GameXOXVM();
         public NavigationVM()
         {
             StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Visible;
+            StaticVisableAndEnableElementsOnView.EnamleOnLoggingGame = System.Windows.Visibility.Visible;
             StaticVisableAndEnableElementsOnView.EnamleOnGamePage = System.Windows.Visibility.Hidden;
-            LogginCommand = new RelayCommand(Loggin);
-            RegisterCommand = new RelayCommand(Register);
-            GameCommand = new RelayCommand(Game);
+            StaticVisableAndEnableElementsOnView.EnamleOnButtonGame = System.Windows.Visibility.Hidden;
+            
             //GameCommandXOX = new RelayCommand(GameXOX);
             //// Startup Page
-            CurrentView = new LogginVM();
+            CurrentView = StaticVisableAndEnableElementsOnView.Loggin;
             Task.Run(() =>
             {
                 if (StaticVisableAndEnableElementsOnView.NonStart == false)
                 {
+                    LogginCommand = new RelayCommand(Loggin);
+                    RegisterCommand = new RelayCommand(Register);
+                    GameCommand = new RelayCommand(Game);
                     while (true)
                     {
+                        EnableButtnosR_startGame = StaticVisableAndEnableElementsOnView.EnamleOnButtonGame;
+                        DesebleREG_Log = StaticVisableAndEnableElementsOnView.EnamleOnLoggingGame;
                         IsEnableView_MDS = StaticVisableAndEnableElementsOnView.EnamleOnGame;
                         IsEnableView_MDSPage = StaticVisableAndEnableElementsOnView.EnamleOnGamePage;
                         if (IsEnableView_MDS == System.Windows.Visibility.Hidden)

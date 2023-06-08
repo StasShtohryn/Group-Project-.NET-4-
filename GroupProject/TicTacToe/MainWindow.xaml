@@ -53,6 +53,7 @@
 
                     <Menu:Btn Style="{StaticResource BtnStyle}"
                               Command="{Binding LogginCommand}"
+                              Visibility="{Binding DesebleREG_Log}"
                               IsChecked="True">
 
                         <Grid>
@@ -60,7 +61,7 @@
                             <Image Source="Images/img_home.png"
                                    Style="{StaticResource Image_Style}" />
 
-                            <TextBlock Text="Loggin"
+                            <TextBlock Text="Login"
                                        Style="{StaticResource Text_Style}" />
 
                         </Grid>
@@ -70,7 +71,9 @@
                     <!--// Registration //-->
 
                     <Menu:Btn Style="{StaticResource BtnStyle}"
-                              Command="{Binding RegisterCommand}">
+                              Command="{Binding RegisterCommand}"
+                              Visibility="{Binding DesebleREG_Log}"
+                              >
 
                         <Grid>
 
@@ -86,7 +89,9 @@
                     </Menu:Btn>
 
                     <Menu:Btn Style="{StaticResource BtnStyle}"
-                              Command="{Binding GameCommand}">
+                              Command="{Binding GameCommand}"
+                              Visibility="{Binding EnableButtnosR_startGame}"
+                              >
 
                         <Grid>
 
