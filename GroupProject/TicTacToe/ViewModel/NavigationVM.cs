@@ -16,6 +16,7 @@ namespace Client.ViewModel
     {
         private object _currentView;
         private object _currentViewGame;
+
         
         public object CurrentView
         {
@@ -46,12 +47,12 @@ namespace Client.ViewModel
         public ICommand LogginCommand { get; set; }
         public ICommand RegisterCommand { get; set; }
         public ICommand GameCommand { get; set; }
-        public ICommand GameCommandXOX { get; set; }
+        //public ICommand GameCommandXOX { get; set; }
 
         private void Loggin(object obj) => CurrentView = new LogginVM();
         private void Register(object obj) => CurrentView = new Registration();
         private void Game(object obj) => CurrentView = new GameVM();
-        private void GameXOX(object obj) => CurrentView = new GameXOXVM();
+        //private void GameXOX(object obj) => CurrentView = new GameXOXVM();
         public NavigationVM()
         {
             StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Visible;
@@ -59,22 +60,27 @@ namespace Client.ViewModel
             LogginCommand = new RelayCommand(Loggin);
             RegisterCommand = new RelayCommand(Register);
             GameCommand = new RelayCommand(Game);
-            GameCommandXOX = new RelayCommand(GameXOX);
+            //GameCommandXOX = new RelayCommand(GameXOX);
             //// Startup Page
             CurrentView = new LogginVM();
             Task.Run(() =>
             {
-               while (true)
+                if (StaticVisableAndEnableElementsOnView.NonStart == false)
                 {
-                    IsEnableView_MDS = StaticVisableAndEnableElementsOnView.EnamleOnGame;
-                    IsEnableView_MDSPage = StaticVisableAndEnableElementsOnView.EnamleOnGamePage;
-                    if (IsEnableView_MDS == System.Windows.Visibility.Hidden)
+                    while (true)
                     {
-                        CurrentViewGame = new GameXOXVM();
-                        IsEnableView_MDSPage = System.Windows.Visibility.Visible;
-                        break;
+                        IsEnableView_MDS = StaticVisableAndEnableElementsOnView.EnamleOnGame;
+                        IsEnableView_MDSPage = StaticVisableAndEnableElementsOnView.EnamleOnGamePage;
+                        if (IsEnableView_MDS == System.Windows.Visibility.Hidden)
+                        {
+                            CurrentViewGame = new GameXOXVM();
+                            IsEnableView_MDSPage = System.Windows.Visibility.Visible;
+                            StaticVisableAndEnableElementsOnView.NonStart = true;
+                            break;
+                        }
                     }
                 }
+               
             });
         }
     }

@@ -54,7 +54,7 @@ namespace Client.ViewModel
         }
         async Task Start()
         {
-
+            //StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
             await StaticClient.Client.SendAsync("Start Game");
             while (true)
             {
@@ -66,11 +66,9 @@ namespace Client.ViewModel
                     StaticVisableAndEnableElementsOnView.EnamleOnGame = System.Windows.Visibility.Hidden;
                     break;
                 }
-                
+
 
             }
-
-            
 
         }
         private RelayCommand open_Game;

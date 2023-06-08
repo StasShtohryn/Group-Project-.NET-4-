@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,7 @@ namespace Client.Model
         public static System.Windows.Visibility EnamleOnGame { get; set; }
         public static System.Windows.Visibility EnamleOnGamePage { get; set; }
         public static bool Enablebuttongame { get; set; }
+        public static bool NonStart { get; set; }
+
     }
 }

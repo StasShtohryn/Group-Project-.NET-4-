@@ -18,7 +18,7 @@ namespace Client.ViewModel
     class GameXOXVM : Utilities.ViewModelBase
     {
         ButtonesString buttonesString = new ButtonesString();
-        bool isMyTurn = true;
+        bool isMyTurn;
         public String Bt1
         {
             get { return buttonesString.Bt1; }
@@ -37,7 +37,7 @@ namespace Client.ViewModel
         public String Bt4
         {
             get { return buttonesString.Bt4; }
-            set { buttonesString.Bt5 = value; OnPropertyChanged(); }
+            set { buttonesString.Bt4 = value; OnPropertyChanged(); }
         }
         public String Bt5
         {
@@ -79,6 +79,7 @@ namespace Client.ViewModel
         private async void BTp1(object obj)
         {
             await Client.SendAsync("1");
+            Bt1 = mySymbol;
             isMyTurn = false;
         }
 
@@ -87,6 +88,7 @@ namespace Client.ViewModel
         private async void BTp2(object obj)
         {
             await Client.SendAsync("2");
+            Bt2 = mySymbol;
             isMyTurn = false;
         }
 
@@ -95,6 +97,7 @@ namespace Client.ViewModel
         private async void BTp3(object obj)
         {
             await Client.SendAsync("3");
+            Bt3 = mySymbol;
             isMyTurn = false;
         }
 
@@ -103,6 +106,7 @@ namespace Client.ViewModel
         private async void BTp4(object obj)
         {
             await Client.SendAsync("4");
+            Bt4 = mySymbol;
             isMyTurn = false;
         }
 
@@ -111,6 +115,7 @@ namespace Client.ViewModel
         private async void BTp5(object obj)
         {
             await Client.SendAsync("5");
+            Bt5 = mySymbol;
             isMyTurn = false;
         }
 
@@ -119,6 +124,7 @@ namespace Client.ViewModel
         private async void BTp6(object obj)
         {
             await Client.SendAsync("6");
+            Bt6 = mySymbol;
             isMyTurn = false;
         }
 
@@ -127,6 +133,7 @@ namespace Client.ViewModel
         private async void BTp7(object obj)
         {
             await Client.SendAsync("7");
+            Bt7 = mySymbol;
             isMyTurn = false;
         }
 
@@ -135,6 +142,7 @@ namespace Client.ViewModel
         private async void BTp8(object obj)
         {
             await Client.SendAsync("8");
+            Bt8 = mySymbol;
             isMyTurn = false;
         }
 
@@ -143,6 +151,7 @@ namespace Client.ViewModel
         private async void BTp9(object obj)
         {
             await Client.SendAsync("9");
+            Bt9 = mySymbol;
             isMyTurn = false;
         }
 
@@ -158,7 +167,7 @@ namespace Client.ViewModel
 
         //private RelayCommand _surrender;
         //private RelayCommand _offer_a_draw;
-        private RelayCommand _Ask_for_a_pause;
+        //private RelayCommand _Ask_for_a_pause;
         private RelayCommand _send_message;
         private RelayCommand _new_game;
 
@@ -176,12 +185,12 @@ namespace Client.ViewModel
         //    await Client.SendAsync("Draw");
         //}
 
-        public ICommand AskForAPause => _Ask_for_a_pause ??= new RelayCommand(Ask_For_A_PauseBt, CanExecuteMethod);
+        //public ICommand AskForAPause => _Ask_for_a_pause ??= new RelayCommand(Ask_For_A_PauseBt, CanExecuteMethod);
 
-        private async void Ask_For_A_PauseBt(object obj)
-        {
-            await Client.SendAsync("Pause");
-        }
+        //private async void Ask_For_A_PauseBt(object obj)
+        //{
+        //    await Client.SendAsync("Pause");
+        //}
 
         public ICommand SendMessage => _send_message ??= new RelayCommand(SendMessageAsync);
 
@@ -233,11 +242,12 @@ namespace Client.ViewModel
 
         async Task StartGame()
         {
+            //isMyTurn = true;
             string user_json = await Client.ReciveAsync();
             user = JsonSerializer.Deserialize<UserModel.User>(user_json);
 
-            string enemySymbol = string.Empty;
-            string mySymbol = await StaticClient.Client.ReciveAsync();
+            enemySymbol = string.Empty;
+            mySymbol = await StaticClient.Client.ReciveAsync();
 
             if (mySymbol == "X")
             {
@@ -288,13 +298,17 @@ namespace Client.ViewModel
                 {
                     var res = MessageBox.Show(answer, "Request to draw", MessageBoxButton.YesNo);
 
-                    if (res == MessageBoxResult.OK)
+                    if (res == MessageBoxResult.Yes)
                         await Client.SendAsync("Agree");
                     else
                         await Client.SendAsync("Disagree");
 
                     isMyTurn = false;
                     continue;
+                }
+                else if (answer.Equals("Disagree"))
+                {
+                    MessageBox.Show("Opponent rejected");
                 }
 
                 else
@@ -311,7 +325,7 @@ namespace Client.ViewModel
 
         private bool CanExecuteMethod(object? param)
         {
-            if (param!=null)
+            if (param != null)
             {
                 string str = param.ToString();
                 return isMyTurn && str != "X" && str != "O";
@@ -360,15 +374,18 @@ namespace Client.ViewModel
         UserModel.User user;
         private bool IsGameOver = false;
 
+        private string mySymbol;
+        private string enemySymbol;
+
         public GameXOXVM()
         {
-                Messages = new ObservableCollection<string>();
-                Client = StaticClient.Client;
-                MessagesClient = StaticMessageClient.Client;
-                isMyTurn = true;
-                Messages = new();
-                _ = StartGame();
-                StaticClient.OpenWindow = false;
+            Messages = new ObservableCollection<string>();
+            Client = StaticClient.Client;
+            MessagesClient = StaticMessageClient.Client;
+            isMyTurn = false;
+            Messages = new();
+            _ = StartGame();
+
         }
     }
 }

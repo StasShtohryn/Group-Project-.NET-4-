@@ -202,7 +202,7 @@ namespace TicTacToe.ServerClient
                 {
                     if (await SendCommandAsync(client1, client2, board))
                         break;
-                    else if (await SendCommandAsync(client1, client2, board))
+                    else if (await SendCommandAsync(client2, client1, board))
                         break;
                 }
             }
@@ -236,8 +236,8 @@ namespace TicTacToe.ServerClient
             string msg = await client1.ReceiveMsgAsync();
             if (msg.Length == 1)
             {
-                int pos = int.Parse(await client1.ReceiveMsgAsync());
-                board[pos] = 1;
+                int pos = int.Parse(msg);
+                board[pos-1] = client1.ClientNumber;
                 (bool endGame, GameResult res) = IsGameOver(board);
                 if (endGame)
                 {
