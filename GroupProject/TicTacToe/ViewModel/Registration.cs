@@ -11,6 +11,7 @@ using System.Windows;
 using System.Security.Cryptography;
 using System.Text.Json;
 using UserModel;
+using System.Threading;
 
 namespace Client.ViewModel
 {
@@ -34,10 +35,32 @@ namespace Client.ViewModel
             set { RFG = value; OnPropertyChanged(); }
         }
 
+        private bool _EnableElementsVM;
+        public bool EnableElementsVM
+        {
+            get { return _EnableElementsVM; }
+            set { _EnableElementsVM = value; OnPropertyChanged(); }
+        }
+
 
         public Registration()
         {
             _pageModel = new PageModel();
+
+            StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register = true;
+
+            Task.Run(() =>
+            {
+                while (true)
+                {
+                    EnableElementsVM = StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register;
+                    if (EnableElementsVM == false)
+                    {
+                        break;
+                    }
+                }
+            });
+
             //CustomerID = "das";
             //PoswordLoggins = "2222";
         }
@@ -81,6 +104,10 @@ namespace Client.ViewModel
                     StaticMessageClient.Client.ConnectToServer();
 
                     UTPallDate = "Registration is successful";
+                    StaticVisableAndEnableElementsOnView.DesableElemet_Loggin_Register = false;
+                    Thread.Sleep(1500);
+                    StaticVisableAndEnableElementsOnView.EnamleOnButtonGame = System.Windows.Visibility.Visible;
+                    StaticVisableAndEnableElementsOnView.EnamleOnLoggingGame = System.Windows.Visibility.Hidden;
                 }
                 else if (answer.Equals("This login already exists"))
                 {

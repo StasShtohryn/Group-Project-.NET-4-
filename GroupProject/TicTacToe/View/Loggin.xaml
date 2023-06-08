@@ -10,11 +10,11 @@
              d:DesignWidth="622"
              Style="{StaticResource Page_Style}">
                 
-    <UserControl.DataContext>
+    <!--<UserControl.DataContext>
         <vm:LogginVM />
-    </UserControl.DataContext>
-    
-    <Grid>
+    </UserControl.DataContext>-->
+
+    <Grid IsEnabled="{Binding EnableElementsVM}">
 
         <Border CornerRadius="0,20,20,0" Margin="0,5,5,0">
 
@@ -23,7 +23,7 @@
 
         </Border>
 
-        <TextBlock Text="Loggin :"
+        <TextBlock Text="Login :"
                    Foreground="#DBDBDB"
                    FontSize="12"
                    HorizontalAlignment="Left"
@@ -31,7 +31,7 @@
                    FontFamily="/Fonts/#Rubik Medium"
                    Margin="78,160,0,0" />
 
-        <TextBlock Text="Posword :"
+        <TextBlock Text="Password  :"
                    Foreground="#DBDBDB"
                    FontSize="12"
                    HorizontalAlignment="Left"
@@ -55,7 +55,7 @@
                    Margin="159,218,0,0" />
         
         
-        <Button Content="                 Loggin
+        <Button Content="                 Login
                 " HorizontalAlignment="Left" FontStyle="Oblique" Margin="108,275,0,0" VerticalAlignment="Top" Width="228"
                 Command="{Binding LogginOnServer}"
                 
